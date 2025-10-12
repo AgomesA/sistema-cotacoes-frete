@@ -10,6 +10,7 @@ from PyQt5.QtCore import Qt, QDate
 from PyQt5.QtGui import QFont
 from PyQt5.QtPrintSupport import QPrintDialog, QPrinter
 import pandas as pd
+import sqlite3
 
 class EditarCotacaoDialog(QDialog):
     def __init__(self, db, cotacao_id, parent=None):
@@ -298,7 +299,7 @@ class EditarCotacaoDialog(QDialog):
         except Exception as e:
             QMessageBox.critical(self, "Erro", f"Erro: {e}")
 
-class HistoricoWindow(QWidget):
+class HistoricoWindow(QWidget):  
     def __init__(self, db):
         super().__init__()
         self.db = db
