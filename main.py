@@ -1,7 +1,8 @@
-# main.py - SISTEMA COMPLETO DE COTAÇÕES DE FRETE (CÓDIGO CORRIGIDO)
+# main.py - SISTEMA COMPLETO DE COTAÇÕES DE FRETE COM DASHBOARD PREMIUM
 import sys
 import os
 import sqlite3
+import colorsys
 from datetime import datetime
 from PyQt5.QtWidgets import (QApplication, QMainWindow, QWidget, QVBoxLayout, QHBoxLayout, 
                              QPushButton, QLabel, QStackedWidget, QMessageBox, QFrame,
@@ -33,8 +34,8 @@ class MainWindow(QMainWindow):
         self.setup_ui()
         
     def setup_ui(self):
-        self.setWindowTitle("🚚 Sistema de Cotações de Frete")
-        self.setMinimumSize(1000, 600)
+        self.setWindowTitle("🚚 Sistema de Cotações de Frete - MERLI")
+        self.setMinimumSize(1200, 700)
         
         # Widget central
         central_widget = QWidget()
@@ -53,19 +54,43 @@ class MainWindow(QMainWindow):
     def setup_sidebar(self, main_layout):
         # Frame da sidebar
         sidebar = QFrame()
-        sidebar.setFixedWidth(200)
-        sidebar.setStyleSheet("background-color: #2c3e50;")
+        sidebar.setFixedWidth(220)
+        sidebar.setStyleSheet("""
+            QFrame {
+                background: qlineargradient(x1:0, y1:0, x2:1, y2:0,
+                    stop:0 #2c3e50, stop:1 #34495e);
+            }
+        """)
         
         sidebar_layout = QVBoxLayout()
         sidebar_layout.setContentsMargins(0, 20, 0, 20)
-        sidebar_layout.setSpacing(10)
+        sidebar_layout.setSpacing(5)
         
-        # Título
-        title = QLabel("🚚 MERLI")
-        title.setFont(QFont("Arial", 16, QFont.Bold))
-        title.setStyleSheet("color: white; padding: 20px;")
-        title.setAlignment(Qt.AlignCenter)
-        sidebar_layout.addWidget(title)
+        # Logo e título
+        logo_widget = QWidget()
+        logo_layout = QVBoxLayout()
+        logo_layout.setAlignment(Qt.AlignCenter)
+        
+        logo_icon = QLabel("🚚")
+        logo_icon.setStyleSheet("font-size: 40px;")
+        logo_icon.setAlignment(Qt.AlignCenter)
+        
+        logo_text = QLabel("MERLI")
+        logo_text.setFont(QFont("Arial", 18, QFont.Bold))
+        logo_text.setStyleSheet("color: white;")
+        logo_text.setAlignment(Qt.AlignCenter)
+        
+        logo_subtext = QLabel("Sistema de Cotações")
+        logo_subtext.setStyleSheet("color: #bdc3c7; font-size: 10px;")
+        logo_subtext.setAlignment(Qt.AlignCenter)
+        
+        logo_layout.addWidget(logo_icon)
+        logo_layout.addWidget(logo_text)
+        logo_layout.addWidget(logo_subtext)
+        logo_widget.setLayout(logo_layout)
+        
+        sidebar_layout.addWidget(logo_widget)
+        sidebar_layout.addSpacing(20)
         
         # Botões do menu com ações
         menu_actions = [
@@ -78,24 +103,35 @@ class MainWindow(QMainWindow):
         
         for menu_text, menu_action in menu_actions:
             btn = QPushButton(menu_text)
-            btn.setFixedHeight(45)
+            btn.setFixedHeight(50)
             btn.setStyleSheet("""
                 QPushButton {
-                    background-color: #34495e;
+                    background-color: rgba(255,255,255,0.1);
                     color: white;
                     border: none;
                     text-align: left;
-                    padding-left: 15px;
+                    padding-left: 20px;
                     font-weight: bold;
+                    font-size: 13px;
+                    border-radius: 5px;
+                    margin: 2px 10px;
                 }
                 QPushButton:hover {
-                    background-color: #3498db;
+                    background-color: rgba(52, 152, 219, 0.3);
+                    border-left: 3px solid #3498db;
                 }
             """)
             btn.clicked.connect(menu_action)
             sidebar_layout.addWidget(btn)
         
         sidebar_layout.addStretch()
+        
+        # Rodapé da sidebar
+        footer_label = QLabel("© 2024 MERLI")
+        footer_label.setStyleSheet("color: #7f8c8d; font-size: 10px; padding: 10px;")
+        footer_label.setAlignment(Qt.AlignCenter)
+        sidebar_layout.addWidget(footer_label)
+        
         sidebar.setLayout(sidebar_layout)
         main_layout.addWidget(sidebar)
     
@@ -120,221 +156,281 @@ class MainWindow(QMainWindow):
         main_layout.addWidget(self.stacked_widget)
 
     def create_home_page(self):
-        """Cria a página inicial com dashboard em tempo real"""
+        """Cria a página inicial com dashboard premium em tempo real"""
         page = QWidget()
         layout = QVBoxLayout()
         layout.setContentsMargins(0, 0, 0, 0)
+        layout.setSpacing(0)
         
-        # Barra superior
+        # Barra superior premium
         top_bar = QFrame()
-        top_bar.setFixedHeight(50)
-        top_bar.setStyleSheet("background-color: white; border-bottom: 1px solid #bdc3c7;")
+        top_bar.setFixedHeight(70)
+        top_bar.setStyleSheet("""
+            QFrame {
+                background: qlineargradient(x1:0, y1:0, x2:1, y2:0,
+                    stop:0 #2c3e50, stop:1 #3498db);
+                border-bottom: 3px solid #2980b9;
+            }
+        """)
         
         top_layout = QHBoxLayout()
-        title = QLabel("SISTEMA DE COTAÇÕES DE FRETE - DASHBOARD")
-        title.setFont(QFont("Arial", 14, QFont.Bold))
-        title.setStyleSheet("color: #2c3e50;")
+        top_layout.setContentsMargins(25, 0, 25, 0)
         
-        top_layout.addWidget(title)
+        # Título e informações
+        title_layout = QVBoxLayout()
+        
+        welcome_text = QLabel("Bem-vindo ao MERLI!")
+        welcome_text.setFont(QFont("Arial", 16, QFont.Bold))
+        welcome_text.setStyleSheet("color: white;")
+        
+        date_text = QLabel(f"📅 {datetime.now().strftime('%A, %d de %B de %Y')} | ⏰ {datetime.now().strftime('%H:%M')}")
+        date_text.setStyleSheet("color: rgba(255,255,255,0.9); font-size: 12px;")
+        
+        title_layout.addWidget(welcome_text)
+        title_layout.addWidget(date_text)
+        
+        # Botões de ação
+        action_layout = QHBoxLayout()
+        
+        btn_atualizar = QPushButton("🔄 Atualizar Dashboard")
+        btn_atualizar.setFixedSize(150, 35)
+        btn_atualizar.setStyleSheet("""
+            QPushButton {
+                background-color: rgba(255,255,255,0.2);
+                color: white;
+                border: 2px solid rgba(255,255,255,0.3);
+                border-radius: 8px;
+                font-weight: bold;
+                font-size: 11px;
+            }
+            QPushButton:hover {
+                background-color: rgba(255,255,255,0.3);
+            }
+        """)
+        btn_atualizar.clicked.connect(self.atualizar_dashboard)
+        
+        action_layout.addStretch()
+        action_layout.addWidget(btn_atualizar)
+        
+        top_layout.addLayout(title_layout)
         top_layout.addStretch()
-        
-        # Data atual
-        data_atual = QLabel(datetime.now().strftime("%d/%m/%Y"))
-        data_atual.setStyleSheet("color: #7f8c8d; font-weight: bold;")
-        top_layout.addWidget(data_atual)
-        
+        top_layout.addLayout(action_layout)
         top_bar.setLayout(top_layout)
         
-        # Área de conteúdo com scroll
-        scroll = QScrollArea()
-        scroll.setWidgetResizable(True)
-        scroll.setStyleSheet("QScrollArea { border: none; }")
+        # Área de conteúdo principal
+        content_area = QWidget()
+        content_area.setStyleSheet("background: qlineargradient(x1:0, y1:0, x2:1, y2:1, stop:0 #ecf0f1, stop:1 #bdc3c7);")
         
-        content_widget = QWidget()
         content_layout = QVBoxLayout()
-        content_layout.setSpacing(15)
-        content_layout.setContentsMargins(15, 15, 15, 15)
+        content_layout.setContentsMargins(25, 25, 25, 25)
+        content_layout.setSpacing(25)
         
         # Buscar dados em tempo real
         dashboard_data = self.get_dashboard_data()
         
-        # 1. CARDS DE RESUMO (KPI's)
-        cards_layout = QHBoxLayout()
-        cards_layout.setSpacing(10)
-        
-        # Card: Total de Cotações
-        total_cotacoes = dashboard_data.get('total_cotacoes_mes', 0)
-        card1 = self.create_card("📊 TOTAL DE COTAÇÕES", str(total_cotacoes), "Este mês", "#3498db")
-        
-        # Card: Transportadoras
-        total_transportadoras = dashboard_data.get('total_transportadoras', 0)
-        card2 = self.create_card("🚛 TRANSPORTADORAS", str(total_transportadoras), "Cadastradas", "#2ecc71")
-        
-        # Card: Economia
-        economia = dashboard_data.get('economia_estimada', 0)
-        economia_formatada = f"R$ {economia:,.2f}".replace(',', 'X').replace('.', ',').replace('X', '.')
-        card3 = self.create_card("💰 ECONOMIA ESTIMADA", economia_formatada, "Este mês", "#e74c3c")
-        
-        # Card: Cotação Mais Recente
-        ultima_data = dashboard_data.get('ultima_cotacao_data', 'Nenhuma')
-        card4 = self.create_card("🕒 ÚLTIMA COTAÇÃO", ultima_data, "Mais recente", "#f39c12")
-        
-        cards_layout.addWidget(card1)
-        cards_layout.addWidget(card2)
-        cards_layout.addWidget(card3)
-        cards_layout.addWidget(card4)
-        
-        content_layout.addLayout(cards_layout)
-        
-        # 2. AÇÕES RÁPIDAS
-        quick_actions_group = QGroupBox("⚡ AÇÕES RÁPIDAS")
-        quick_actions_group.setStyleSheet("QGroupBox { font-weight: bold; font-size: 14px; }")
-        quick_layout = QHBoxLayout()
-        
-        btn_nova_cotacao = QPushButton("📦 NOVA COTAÇÃO")
-        btn_nova_cotacao.setFixedHeight(60)
-        btn_nova_cotacao.setStyleSheet("""
-            QPushButton {
-                background-color: #27ae60;
-                color: white;
-                border: none;
+        # 1. CARDS DE MÉTRICAS PRINCIPAIS
+        metrics_group = QGroupBox("📊 VISÃO GERAL DO SISTEMA")
+        metrics_group.setStyleSheet("""
+            QGroupBox {
                 font-weight: bold;
-                font-size: 14px;
-                border-radius: 5px;
+                font-size: 16px;
+                color: #2c3e50;
+                border: 2px solid #95a5a6;
+                border-radius: 12px;
+                margin-top: 15px;
+                padding-top: 15px;
+                background: white;
             }
-            QPushButton:hover {
-                background-color: #2ecc71;
+            QGroupBox::title {
+                subcontrol-origin: margin;
+                left: 15px;
+                padding: 0 10px 0 10px;
+                background: white;
             }
         """)
-        btn_nova_cotacao.clicked.connect(self.show_cotacao)
         
-        btn_calculadora = QPushButton("🧮 CALCULADORA CUBAGEM")
-        btn_calculadora.setFixedHeight(60)
-        btn_calculadora.setStyleSheet("""
-            QPushButton {
-                background-color: #2980b9;
-                color: white;
-                border: none;
+        metrics_layout = QHBoxLayout()
+        metrics_layout.setSpacing(20)
+        
+        # Cards de métricas
+        cards_data = [
+            {
+                "title": "Cotações do Mês", 
+                "value": str(dashboard_data.get('total_cotacoes_mes', 0)),
+                "subtitle": "Realizadas este mês",
+                "color": "#3498db",
+                "icon": "📦"
+            },
+            {
+                "title": "Transportadoras", 
+                "value": str(dashboard_data.get('total_transportadoras', 0)),
+                "subtitle": "Cadastradas no sistema", 
+                "color": "#2ecc71",
+                "icon": "🚛"
+            },
+            {
+                "title": "Economia Estimada", 
+                "value": f"R$ {dashboard_data.get('economia_estimada', 0):,.0f}".replace(',', 'X').replace('.', ',').replace('X', '.'),
+                "subtitle": "Total economizado",
+                "color": "#e74c3c", 
+                "icon": "💰"
+            },
+            {
+                "title": "Performance",
+                "value": f"{dashboard_data.get('taxa_media_frete', 0):.1f}%",
+                "subtitle": "Taxa média de frete",
+                "color": "#f39c12",
+                "icon": "📈"
+            }
+        ]
+        
+        for card_info in cards_data:
+            card = self.create_premium_card(
+                card_info["title"],
+                card_info["value"], 
+                card_info["subtitle"],
+                card_info["color"],
+                card_info["icon"]
+            )
+            metrics_layout.addWidget(card)
+        
+        metrics_group.setLayout(metrics_layout)
+        content_layout.addWidget(metrics_group)
+        
+        # 2. LAYOUT DUPLO: AÇÕES + ESTATÍSTICAS
+        dual_layout = QHBoxLayout()
+        dual_layout.setSpacing(25)
+        
+        # COLUNA ESQUERDA - AÇÕES RÁPIDAS
+        left_column = QVBoxLayout()
+        left_column.setSpacing(20)
+        
+        # Ações rápidas
+        actions_group = QGroupBox("⚡ AÇÕES RÁPIDAS")
+        actions_group.setStyleSheet("""
+            QGroupBox {
                 font-weight: bold;
                 font-size: 14px;
-                border-radius: 5px;
+                color: #2c3e50;
+                border: 2px solid #bdc3c7;
+                border-radius: 10px;
+                margin-top: 10px;
+                padding-top: 10px;
+                background: white;
             }
-            QPushButton:hover {
-                background-color: #3498db;
+            QGroupBox::title {
+                subcontrol-origin: margin;
+                left: 10px;
+                padding: 0 5px 0 5px;
             }
         """)
-        btn_calculadora.clicked.connect(self.show_calculadora)
         
-        btn_transportadoras = QPushButton("🚛 TRANSPORTADORAS")
-        btn_transportadoras.setFixedHeight(60)
-        btn_transportadoras.setStyleSheet("""
-            QPushButton {
-                background-color: #8e44ad;
-                color: white;
-                border: none;
+        actions_layout = QVBoxLayout()
+        actions_layout.setSpacing(10)
+        
+        action_buttons = [
+            ("📦 NOVA COTAÇÃO", self.show_cotacao, "#27ae60"),
+            ("🧮 CALCULADORA CUBAGEM", self.show_calculadora, "#2980b9"), 
+            ("🚛 TRANSPORTADORAS", self.show_transportadoras, "#8e44ad"),
+            ("📋 VER HISTÓRICO", self.show_historico, "#e67e22")
+        ]
+        
+        for text, action, color in action_buttons:
+            btn = self.create_action_button(text, color)
+            btn.clicked.connect(action)
+            actions_layout.addWidget(btn)
+        
+        actions_group.setLayout(actions_layout)
+        left_column.addWidget(actions_group)
+        
+        # COLUNA DIREITA - ESTATÍSTICAS
+        right_column = QVBoxLayout()
+        right_column.setSpacing(20)
+        
+        # Estatísticas detalhadas
+        stats_group = QGroupBox("📈 ESTATÍSTICAS DETALHADAS")
+        stats_group.setStyleSheet("""
+            QGroupBox {
                 font-weight: bold;
                 font-size: 14px;
-                border-radius: 5px;
+                color: #2c3e50;
+                border: 2px solid #bdc3c7;
+                border-radius: 10px;
+                margin-top: 10px;
+                padding-top: 10px;
+                background: white;
             }
-            QPushButton:hover {
-                background-color: #9b59b6;
+            QGroupBox::title {
+                subcontrol-origin: margin;
+                left: 10px;
+                padding: 0 5px 0 5px;
             }
         """)
-        btn_transportadoras.clicked.connect(self.show_transportadoras)
         
-        quick_layout.addWidget(btn_nova_cotacao)
-        quick_layout.addWidget(btn_calculadora)
-        quick_layout.addWidget(btn_transportadoras)
-        quick_actions_group.setLayout(quick_layout)
-        content_layout.addWidget(quick_actions_group)
+        stats_layout = QVBoxLayout()
+        stats_layout.setSpacing(8)
+        
+        stats_data = [
+            ("📅 Cotações este mês:", str(dashboard_data.get('total_cotacoes_mes', 0))),
+            ("💰 Valor total das NF:", f"R$ {dashboard_data.get('valor_total_mes', 0):,.2f}".replace(',', 'X').replace('.', ',').replace('X', '.')),
+            ("📦 Maior valor de NF:", f"R$ {dashboard_data.get('maior_valor_nf', 0):,.2f}".replace(',', 'X').replace('.', ',').replace('X', '.')),
+            ("🚛 Transportadoras ativas:", str(dashboard_data.get('total_transportadoras', 0))),
+            ("🏆 Transportadora mais usada:", dashboard_data.get('transp_mais_usada', 'Nenhuma')),
+            ("📊 Taxa média de frete:", f"{dashboard_data.get('taxa_media_frete', 0):.1f}%"),
+            ("💸 Economia total estimada:", f"R$ {dashboard_data.get('economia_estimada', 0):,.2f}".replace(',', 'X').replace('.', ',').replace('X', '.')),
+            ("🕒 Última cotação:", dashboard_data.get('ultima_cotacao_data', 'Nenhuma'))
+        ]
+        
+        for label, value in stats_data:
+            stat_item = self.create_premium_stat_item(label, value)
+            stats_layout.addWidget(stat_item)
+        
+        stats_group.setLayout(stats_layout)
+        right_column.addWidget(stats_group)
+        
+        # Adiciona as colunas ao layout duplo
+        dual_layout.addLayout(left_column, 40)
+        dual_layout.addLayout(right_column, 60)
+        
+        content_layout.addLayout(dual_layout)
         
         # 3. COTAÇÕES RECENTES
         recent_group = QGroupBox("🕒 COTAÇÕES MAIS RECENTES")
-        recent_group.setStyleSheet("QGroupBox { font-weight: bold; font-size: 14px; }")
+        recent_group.setStyleSheet("""
+            QGroupBox {
+                font-weight: bold;
+                font-size: 14px;
+                color: #2c3e50;
+                border: 2px solid #bdc3c7;
+                border-radius: 10px;
+                margin-top: 10px;
+                padding-top: 10px;
+                background: white;
+            }
+            QGroupBox::title {
+                subcontrol-origin: margin;
+                left: 10px;
+                padding: 0 5px 0 5px;
+            }
+        """)
+        
         recent_layout = QVBoxLayout()
         
-        # Tabela de cotações recentes do banco
-        recent_table = QTableWidget()
-        recent_table.setColumnCount(5)
-        recent_table.setHorizontalHeaderLabels(["Data", "Fornecedor", "Valor NF", "Frete", "Transportadora"])
-        
-        cotacoes_recentes = dashboard_data.get('cotacoes_recentes', [])
-        recent_table.setRowCount(len(cotacoes_recentes))
-        
-        for row, cotacao in enumerate(cotacoes_recentes):
-            # Data
-            data_item = QTableWidgetItem(cotacao['data'])
-            recent_table.setItem(row, 0, data_item)
-            
-            # Fornecedor
-            fornecedor_item = QTableWidgetItem(cotacao['fornecedor'])
-            recent_table.setItem(row, 1, fornecedor_item)
-            
-            # Valor NF
-            valor_nf = f"R$ {cotacao['valor_nf']:,.2f}".replace(',', 'X').replace('.', ',').replace('X', '.')
-            valor_item = QTableWidgetItem(valor_nf)
-            recent_table.setItem(row, 2, valor_item)
-            
-            # Frete
-            if cotacao['valor_frete']:
-                frete = f"R$ {cotacao['valor_frete']:,.2f}".replace(',', 'X').replace('.', ',').replace('X', '.')
-            else:
-                frete = "-"
-            frete_item = QTableWidgetItem(frete)
-            recent_table.setItem(row, 3, frete_item)
-            
-            # Transportadora
-            transp_item = QTableWidgetItem(cotacao['transportadora'] or "-")
-            recent_table.setItem(row, 4, transp_item)
-        
-        # Configurar header da tabela - CORREÇÃO AQUI
-        header = recent_table.horizontalHeader()
-        header.setSectionResizeMode(0, QHeaderView.ResizeToContents)
-        header.setSectionResizeMode(1, QHeaderView.Stretch)
-        header.setSectionResizeMode(2, QHeaderView.ResizeToContents)
-        header.setSectionResizeMode(3, QHeaderView.ResizeToContents)
-        header.setSectionResizeMode(4, QHeaderView.ResizeToContents)
-        
-        recent_table.setMaximumHeight(200)
+        # Tabela de cotações recentes
+        recent_table = self.create_premium_table(dashboard_data.get('cotacoes_recentes', []))
         recent_layout.addWidget(recent_table)
-        
-        # Botão ver todas
-        btn_ver_todas = QPushButton("📋 Ver Todas as Cotações")
-        btn_ver_todas.clicked.connect(self.show_historico)
-        recent_layout.addWidget(btn_ver_todas)
         
         recent_group.setLayout(recent_layout)
         content_layout.addWidget(recent_group)
         
-        # 4. ESTATÍSTICAS RÁPIDAS
-        stats_group = QGroupBox("📊 ESTATÍSTICAS")
-        stats_group.setStyleSheet("QGroupBox { font-weight: bold; font-size: 14px; }")
-        stats_layout = QHBoxLayout()
+        content_area.setLayout(content_layout)
         
-        stats_left = QVBoxLayout()
-        stats_right = QVBoxLayout()
-        
-        # Estatísticas à esquerda
-        stats_left.addWidget(self.create_stat_item("📅 Cotações este mês:", str(dashboard_data.get('total_cotacoes_mes', 0))))
-        
-        valor_total = f"R$ {dashboard_data.get('valor_total_mes', 0):,.2f}".replace(',', 'X').replace('.', ',').replace('X', '.')
-        stats_left.addWidget(self.create_stat_item("💰 Valor total NF:", valor_total))
-        
-        maior_valor = f"R$ {dashboard_data.get('maior_valor_nf', 0):,.2f}".replace(',', 'X').replace('.', ',').replace('X', '.')
-        stats_left.addWidget(self.create_stat_item("📦 Maior valor de NF:", maior_valor))
-        
-        # Estatísticas à direita  
-        stats_right.addWidget(self.create_stat_item("🚛 Transportadoras ativas:", str(dashboard_data.get('total_transportadoras', 0))))
-        stats_right.addWidget(self.create_stat_item("🏆 Transportadora mais usada:", dashboard_data.get('transp_mais_usada', 'Nenhuma')))
-        stats_right.addWidget(self.create_stat_item("📈 Taxa média de frete:", f"{dashboard_data.get('taxa_media_frete', 0):.1f}%"))
-        
-        stats_layout.addLayout(stats_left)
-        stats_layout.addLayout(stats_right)
-        stats_group.setLayout(stats_layout)
-        content_layout.addWidget(stats_group)
-        
-        content_widget.setLayout(content_layout)
-        scroll.setWidget(content_widget)
+        # Scroll area
+        scroll = QScrollArea()
+        scroll.setWidgetResizable(True)
+        scroll.setStyleSheet("QScrollArea { border: none; background: transparent; }")
+        scroll.setVerticalScrollBarPolicy(Qt.ScrollBarAsNeeded)
+        scroll.setWidget(content_area)
         
         # Layout principal
         layout.addWidget(top_bar)
@@ -343,30 +439,52 @@ class MainWindow(QMainWindow):
         page.setLayout(layout)
         return page
 
-    def create_card(self, title, value, subtitle, color):
-        """Cria um card de métrica"""
+    def create_premium_card(self, title, value, subtitle, color, icon):
+        """Cria um card premium com gradiente"""
         card = QFrame()
-        card.setFixedSize(180, 100)
+        card.setFixedSize(220, 130)
         card.setStyleSheet(f"""
             QFrame {{
-                background-color: {color};
-                border-radius: 8px;
-                padding: 10px;
+                background: qlineargradient(x1:0, y1:0, x2:1, y2:1,
+                    stop:0 {color}, stop:1 {self.darken_color(color, 15)});
+                border-radius: 12px;
+                border: 1px solid {self.darken_color(color, 10)};
+            }}
+            QFrame:hover {{
+                background: qlineargradient(x1:0, y1:0, x2:1, y2:1,
+                    stop:0 {self.lighten_color(color, 5)}, stop:1 {color});
+                border: 2px solid {self.lighten_color(color, 20)};
             }}
         """)
         
         card_layout = QVBoxLayout()
+        card_layout.setContentsMargins(15, 15, 15, 15)
+        card_layout.setSpacing(8)
+        
+        # Header do card
+        header_layout = QHBoxLayout()
+        
+        icon_label = QLabel(icon)
+        icon_label.setStyleSheet("font-size: 24px;")
         
         title_label = QLabel(title)
         title_label.setStyleSheet("color: white; font-size: 12px; font-weight: bold;")
         
+        header_layout.addWidget(icon_label)
+        header_layout.addWidget(title_label)
+        header_layout.addStretch()
+        
+        # Valor principal
         value_label = QLabel(value)
-        value_label.setStyleSheet("color: white; font-size: 20px; font-weight: bold;")
+        value_label.setStyleSheet("color: white; font-size: 28px; font-weight: bold;")
+        value_label.setAlignment(Qt.AlignCenter)
         
+        # Subtítulo
         subtitle_label = QLabel(subtitle)
-        subtitle_label.setStyleSheet("color: rgba(255,255,255,0.8); font-size: 11px;")
+        subtitle_label.setStyleSheet("color: rgba(255,255,255,0.9); font-size: 11px; font-style: italic;")
+        subtitle_label.setAlignment(Qt.AlignCenter)
         
-        card_layout.addWidget(title_label)
+        card_layout.addLayout(header_layout)
         card_layout.addWidget(value_label)
         card_layout.addStretch()
         card_layout.addWidget(subtitle_label)
@@ -374,14 +492,54 @@ class MainWindow(QMainWindow):
         card.setLayout(card_layout)
         return card
 
-    def create_stat_item(self, label, value):
-        """Cria um item de estatística"""
+    def create_action_button(self, text, color):
+        """Cria botões de ação estilizados"""
+        btn = QPushButton(text)
+        btn.setFixedHeight(55)
+        btn.setStyleSheet(f"""
+            QPushButton {{
+                background: qlineargradient(x1:0, y1:0, x2:1, y2:0,
+                    stop:0 {color}, stop:1 {self.lighten_color(color, 15)});
+                color: white;
+                border: none;
+                border-radius: 10px;
+                font-weight: bold;
+                font-size: 13px;
+                padding: 15px;
+            }}
+            QPushButton:hover {{
+                background: qlineargradient(x1:0, y1:0, x2:1, y2:0,
+                    stop:0 {self.lighten_color(color, 5)}, stop:1 {self.lighten_color(color, 20)});
+                border: 2px solid rgba(255,255,255,0.3);
+            }}
+            QPushButton:pressed {{
+                background: qlineargradient(x1:0, y1:0, x2:1, y2:0,
+                    stop:0 {self.darken_color(color, 5)}, stop:1 {color});
+            }}
+        """)
+        return btn
+
+    def create_premium_stat_item(self, label, value):
+        """Cria itens de estatística premium"""
         widget = QWidget()
+        widget.setFixedHeight(35)
+        widget.setStyleSheet("""
+            QWidget {
+                background: rgba(255,255,255,0.8);
+                border-radius: 8px;
+                margin: 2px;
+            }
+            QWidget:hover {
+                background: rgba(255,255,255,0.95);
+                border: 1px solid #3498db;
+            }
+        """)
+        
         layout = QHBoxLayout()
-        layout.setContentsMargins(5, 2, 5, 2)
+        layout.setContentsMargins(15, 0, 15, 0)
         
         label_widget = QLabel(label)
-        label_widget.setStyleSheet("color: #2c3e50; font-size: 12px;")
+        label_widget.setStyleSheet("color: #2c3e50; font-size: 12px; font-weight: bold;")
         
         value_widget = QLabel(value)
         value_widget.setStyleSheet("color: #27ae60; font-size: 12px; font-weight: bold;")
@@ -392,6 +550,104 @@ class MainWindow(QMainWindow):
         
         widget.setLayout(layout)
         return widget
+
+    def create_premium_table(self, cotacoes_recentes):
+        """Cria tabela premium para cotações recentes"""
+        table = QTableWidget()
+        table.setColumnCount(5)
+        table.setHorizontalHeaderLabels(["📅 Data", "🏢 Fornecedor", "💰 Valor NF", "🚚 Frete", "📊 Transportadora"])
+        
+        # Estilo da tabela
+        table.setStyleSheet("""
+            QTableWidget {
+                background-color: white;
+                border: 2px solid #bdc3c7;
+                border-radius: 10px;
+                gridline-color: #ecf0f1;
+                font-size: 11px;
+            }
+            QHeaderView::section {
+                background-color: #34495e;
+                color: white;
+                padding: 12px;
+                border: none;
+                font-weight: bold;
+                font-size: 11px;
+            }
+            QTableWidget::item {
+                padding: 10px;
+                border-bottom: 1px solid #ecf0f1;
+            }
+            QTableWidget::item:selected {
+                background-color: #3498db;
+                color: white;
+            }
+        """)
+        
+        table.setRowCount(len(cotacoes_recentes))
+        
+        for row, cotacao in enumerate(cotacoes_recentes):
+            # Data
+            data_item = QTableWidgetItem(cotacao['data'])
+            table.setItem(row, 0, data_item)
+            
+            # Fornecedor
+            fornecedor_item = QTableWidgetItem(cotacao['fornecedor'])
+            table.setItem(row, 1, fornecedor_item)
+            
+            # Valor NF
+            valor_nf = f"R$ {cotacao['valor_nf']:,.2f}".replace(',', 'X').replace('.', ',').replace('X', '.')
+            valor_item = QTableWidgetItem(valor_nf)
+            table.setItem(row, 2, valor_item)
+            
+            # Frete
+            if cotacao['valor_frete']:
+                frete = f"R$ {cotacao['valor_frete']:,.2f}".replace(',', 'X').replace('.', ',').replace('X', '.')
+            else:
+                frete = "-"
+            frete_item = QTableWidgetItem(frete)
+            table.setItem(row, 3, frete_item)
+            
+            # Transportadora
+            transp_item = QTableWidgetItem(cotacao['transportadora'] or "-")
+            table.setItem(row, 4, transp_item)
+        
+        # Configurar header
+        header = table.horizontalHeader()
+        header.setSectionResizeMode(0, QHeaderView.ResizeToContents)
+        header.setSectionResizeMode(1, QHeaderView.Stretch)
+        header.setSectionResizeMode(2, QHeaderView.ResizeToContents)
+        header.setSectionResizeMode(3, QHeaderView.ResizeToContents)
+        header.setSectionResizeMode(4, QHeaderView.ResizeToContents)
+        
+        table.setMaximumHeight(220)
+        return table
+
+    def darken_color(self, color, percent):
+        """Escurece uma cor HEX"""
+        color = color.lstrip('#')
+        rgb = tuple(int(color[i:i+2], 16) for i in (0, 2, 4))
+        hls = colorsys.rgb_to_hls(rgb[0]/255, rgb[1]/255, rgb[2]/255)
+        darker = colorsys.hls_to_rgb(hls[0], max(0, hls[1] - percent/100), hls[2])
+        return '#{:02x}{:02x}{:02x}'.format(int(darker[0]*255), int(darker[1]*255), int(darker[2]*255))
+
+    def lighten_color(self, color, percent):
+        """Clareia uma cor HEX"""
+        color = color.lstrip('#')
+        rgb = tuple(int(color[i:i+2], 16) for i in (0, 2, 4))
+        hls = colorsys.rgb_to_hls(rgb[0]/255, rgb[1]/255, rgb[2]/255)
+        lighter = colorsys.hls_to_rgb(hls[0], min(1, hls[1] + percent/100), hls[2])
+        return '#{:02x}{:02x}{:02x}'.format(int(lighter[0]*255), int(lighter[1]*255), int(lighter[2]*255))
+
+    def atualizar_dashboard(self):
+        """Atualiza o dashboard"""
+        # Recria a página home
+        self.stacked_widget.removeWidget(self.home_page)
+        self.home_page = self.create_home_page()
+        self.stacked_widget.insertWidget(0, self.home_page)
+        self.stacked_widget.setCurrentIndex(0)
+        
+        QMessageBox.information(self, "Atualizado", "Dashboard atualizado com sucesso!")
 
     def get_dashboard_data(self):
         """Busca dados reais do banco para o dashboard"""
