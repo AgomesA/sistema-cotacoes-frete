@@ -1,3 +1,4 @@
+# cotacao_window.py - DESIGN PREMIUM
 import sqlite3
 import re
 from PyQt5.QtWidgets import (QWidget, QVBoxLayout, QHBoxLayout, QPushButton, 
@@ -17,21 +18,35 @@ class CotacaoWindow(QWidget):
         self.carregar_transportadoras()
     
     def setup_ui(self):
-        """Configura a interface da tela de cotação"""
+        """Configura a interface da tela de cotação com design premium"""
         main_layout = QVBoxLayout()
+        main_layout.setContentsMargins(0, 0, 0, 0)
         self.setLayout(main_layout)
         
-        # Título
-        title = QLabel("NOVA COTAÇÃO")
-        title.setFont(QFont("Arial", 16, QFont.Bold))
-        title.setAlignment(Qt.AlignCenter)
-        main_layout.addWidget(title)
+        # Aplicar fundo gradiente
+        self.setStyleSheet("background: qlineargradient(x1:0, y1:0, x2:1, y2:1, stop:0 #ecf0f1, stop:1 #bdc3c7);")
+        
+        # Header premium
+        header = QLabel("📦 NOVA COTAÇÃO")
+        header.setFont(QFont("Arial", 20, QFont.Bold))
+        header.setStyleSheet("""
+            color: white; 
+            padding: 25px; 
+            background: qlineargradient(x1:0, y1:0, x2:1, y2:0, stop:0 #e74c3c, stop:1 #c0392b);
+            border-bottom: 3px solid #a23526;
+            margin-bottom: 0px;
+        """)
+        header.setAlignment(Qt.AlignCenter)
+        main_layout.addWidget(header)
         
         # Scroll area para o formulário
         scroll = QScrollArea()
         scroll.setWidgetResizable(True)
+        scroll.setStyleSheet("QScrollArea { border: none; background: transparent; }")
         scroll_content = QWidget()
         scroll_layout = QVBoxLayout()
+        scroll_layout.setSpacing(20)
+        scroll_layout.setContentsMargins(25, 25, 25, 25)
         
         # Seção 1: Dados do Fornecedor
         self.setup_dados_fornecedor(scroll_layout)
@@ -46,97 +61,209 @@ class CotacaoWindow(QWidget):
         scroll.setWidget(scroll_content)
         main_layout.addWidget(scroll)
     
-    def formatar_moeda(self, valor):
-        """Formata qualquer valor digitado para moeda"""
-        try:
-            # Remove tudo que não é número
-            texto_limpo = re.sub(r'[^\d]', '', str(valor))
-            if not texto_limpo:
-                return ""
-            
-            # Converte para número (assume que são centavos)
-            numero = float(texto_limpo) / 100
-            
-            # Formata como moeda brasileira
-            return f"R$ {numero:,.2f}".replace(',', 'X').replace('.', ',').replace('X', '.')
-        except:
-            return ""
-    
     def setup_dados_fornecedor(self, layout):
-        """Configura a seção de dados do fornecedor"""
+        """Configura a seção de dados do fornecedor com design premium"""
         group = QGroupBox("📦 DADOS DO FORNECEDOR")
+        group.setStyleSheet("""
+            QGroupBox {
+                font-weight: bold;
+                font-size: 16px;
+                color: #2c3e50;
+                border: 3px solid #3498db;
+                border-radius: 12px;
+                margin-top: 15px;
+                padding-top: 15px;
+                background: white;
+            }
+            QGroupBox::title {
+                subcontrol-origin: margin;
+                left: 15px;
+                padding: 0 15px 0 15px;
+                background: white;
+            }
+        """)
+        
         form_layout = QFormLayout()
+        form_layout.setLabelAlignment(Qt.AlignRight)
+        form_layout.setVerticalSpacing(15)
+        form_layout.setHorizontalSpacing(25)
         
         # Data atual
         self.data_input = QDateEdit()
         self.data_input.setDate(QDate.currentDate())
         self.data_input.setCalendarPopup(True)
         self.data_input.setDisplayFormat("dd/MM/yyyy")
+        self.data_input.setStyleSheet("""
+            QDateEdit {
+                padding: 10px;
+                border: 2px solid #bdc3c7;
+                border-radius: 6px;
+                font-size: 12px;
+                background: white;
+            }
+            QDateEdit:focus {
+                border-color: #3498db;
+            }
+        """)
         
         # Fornecedor
         self.fornecedor_input = QLineEdit()
         self.fornecedor_input.setPlaceholderText("Nome do fornecedor")
+        self.fornecedor_input.setStyleSheet("""
+            QLineEdit {
+                padding: 10px;
+                border: 2px solid #bdc3c7;
+                border-radius: 6px;
+                font-size: 12px;
+            }
+            QLineEdit:focus {
+                border-color: #3498db;
+            }
+        """)
         
         # Nº Pedido
         self.pedido_input = QLineEdit()
         self.pedido_input.setPlaceholderText("Número do pedido")
+        self.pedido_input.setStyleSheet("""
+            QLineEdit {
+                padding: 10px;
+                border: 2px solid #bdc3c7;
+                border-radius: 6px;
+                font-size: 12px;
+            }
+            QLineEdit:focus {
+                border-color: #3498db;
+            }
+        """)
         
-        # Valor da NF - FORMATA QUALQUER VALOR DIGITADO
+        # Valor da NF
         self.valor_nf_input = QLineEdit()
         self.valor_nf_input.setPlaceholderText("Digite o valor da NF")
+        self.valor_nf_input.setStyleSheet("""
+            QLineEdit {
+                padding: 10px;
+                border: 2px solid #bdc3c7;
+                border-radius: 6px;
+                font-size: 12px;
+            }
+            QLineEdit:focus {
+                border-color: #27ae60;
+            }
+        """)
         self.valor_nf_input.textChanged.connect(self.on_valor_nf_changed)
         
         # Volume
         self.volume_input = QLineEdit()
         self.volume_input.setPlaceholderText("Quantidade de volumes")
+        self.volume_input.setStyleSheet("""
+            QLineEdit {
+                padding: 10px;
+                border: 2px solid #bdc3c7;
+                border-radius: 6px;
+                font-size: 12px;
+            }
+            QLineEdit:focus {
+                border-color: #3498db;
+            }
+        """)
         
         # Peso
         self.peso_input = QLineEdit()
         self.peso_input.setPlaceholderText("Ex: 77,7")
+        self.peso_input.setStyleSheet("""
+            QLineEdit {
+                padding: 10px;
+                border: 2px solid #bdc3c7;
+                border-radius: 6px;
+                font-size: 12px;
+            }
+            QLineEdit:focus {
+                border-color: #3498db;
+            }
+        """)
         
         # Cubagem
         self.cubagem_input = QLineEdit()
         self.cubagem_input.setPlaceholderText("Ex: 0,746")
+        self.cubagem_input.setStyleSheet("""
+            QLineEdit {
+                padding: 10px;
+                border: 2px solid #bdc3c7;
+                border-radius: 6px;
+                font-size: 12px;
+            }
+            QLineEdit:focus {
+                border-color: #3498db;
+            }
+        """)
         
-        form_layout.addRow("Data:", self.data_input)
-        form_layout.addRow("Fornecedor*:", self.fornecedor_input)
-        form_layout.addRow("Nº Pedido:", self.pedido_input)
-        form_layout.addRow("Valor NF*:", self.valor_nf_input)
-        form_layout.addRow("Volume:", self.volume_input)
-        form_layout.addRow("Peso:", self.peso_input)
-        form_layout.addRow("Cubagem:", self.cubagem_input)
+        form_layout.addRow("📅 Data:", self.data_input)
+        form_layout.addRow("🏢 Fornecedor*:", self.fornecedor_input)
+        form_layout.addRow("📋 Nº Pedido:", self.pedido_input)
+        form_layout.addRow("💰 Valor NF*:", self.valor_nf_input)
+        form_layout.addRow("📦 Volume:", self.volume_input)
+        form_layout.addRow("⚖️ Peso:", self.peso_input)
+        form_layout.addRow("📐 Cubagem:", self.cubagem_input)
         
         group.setLayout(form_layout)
         layout.addWidget(group)
     
-    def on_valor_nf_changed(self, texto):
-        """Formata qualquer valor digitado e calcula Rodocargas"""
-        if not texto:
-            self.limpar_rodocargas()
-            return
-        
-        # Formata o valor digitado
-        texto_formatado = self.formatar_moeda(texto)
-        if texto_formatado and texto_formatado != texto:
-            self.valor_nf_input.blockSignals(True)
-            self.valor_nf_input.setText(texto_formatado)
-            self.valor_nf_input.setCursorPosition(len(texto_formatado))
-            self.valor_nf_input.blockSignals(False)
-        
-        # Calcula Rodocargas
-        self.calcular_rodocargas_automatico()
-    
     def setup_transportadoras_fretes(self, layout):
-        """Configura a seção de transportadoras e fretes"""
+        """Configura a seção de transportadoras e fretes com design premium"""
         group = QGroupBox("🚛 TRANSPORTADORAS E FRETES")
+        group.setStyleSheet("""
+            QGroupBox {
+                font-weight: bold;
+                font-size: 16px;
+                color: #2c3e50;
+                border: 3px solid #e67e22;
+                border-radius: 12px;
+                margin-top: 15px;
+                padding-top: 15px;
+                background: white;
+            }
+            QGroupBox::title {
+                subcontrol-origin: margin;
+                left: 15px;
+                padding: 0 15px 0 15px;
+                background: white;
+            }
+        """)
+        
         group_layout = QVBoxLayout()
         
-        # Tabela de transportadoras
+        # Tabela de transportadoras premium
         self.table_transportadoras = QTableWidget()
         self.table_transportadoras.setColumnCount(5)
         self.table_transportadoras.setHorizontalHeaderLabels([
             "Transportadora", "Valor Frete", "Percentual", "Cálculo", "Ação"
         ])
+        
+        # Estilo premium da tabela
+        self.table_transportadoras.setStyleSheet("""
+            QTableWidget {
+                background: white;
+                border: 2px solid #bdc3c7;
+                border-radius: 8px;
+                gridline-color: #ecf0f1;
+                font-size: 11px;
+            }
+            QHeaderView::section {
+                background-color: #34495e;
+                color: white;
+                padding: 12px;
+                border: none;
+                font-weight: bold;
+            }
+            QTableWidget::item {
+                padding: 10px;
+                border-bottom: 1px solid #ecf0f1;
+            }
+            QTableWidget::item:selected {
+                background-color: #3498db;
+                color: white;
+            }
+        """)
         
         header = self.table_transportadoras.horizontalHeader()
         header.setSectionResizeMode(0, QHeaderView.Stretch)
@@ -149,7 +276,16 @@ class CotacaoWindow(QWidget):
         
         # Info da Rodocargas
         self.rodocargas_info = QLabel("")
-        self.rodocargas_info.setStyleSheet("color: #2c3e50; font-weight: bold; margin: 10px;")
+        self.rodocargas_info.setStyleSheet("""
+            color: #c0392b; 
+            font-weight: bold; 
+            font-size: 12px; 
+            padding: 12px; 
+            background: #fadbd8; 
+            border: 2px solid #e74c3c;
+            border-radius: 8px;
+            margin: 10px;
+        """)
         self.rodocargas_info.setVisible(False)
         group_layout.addWidget(self.rodocargas_info)
         
@@ -157,20 +293,62 @@ class CotacaoWindow(QWidget):
         layout.addWidget(group)
     
     def setup_botoes_acao(self, layout):
-        """Configura os botões de ação"""
+        """Configura os botões de ação com design premium"""
         btn_layout = QHBoxLayout()
+        btn_layout.setSpacing(15)
         
         btn_calcular = QPushButton("🧮 CALCULAR")
-        btn_calcular.setFixedHeight(40)
+        btn_calcular.setFixedHeight(50)
+        btn_calcular.setStyleSheet("""
+            QPushButton {
+                background: qlineargradient(x1:0, y1:0, x2:1, y2:0, stop:0 #3498db, stop:1 #2980b9);
+                color: white;
+                border: none;
+                border-radius: 8px;
+                font-weight: bold;
+                font-size: 14px;
+            }
+            QPushButton:hover {
+                background: qlineargradient(x1:0, y1:0, x2:1, y2:0, stop:0 #2980b9, stop:1 #3498db);
+                border: 2px solid rgba(255,255,255,0.3);
+            }
+        """)
         btn_calcular.clicked.connect(self.calcular_fretes)
         
         btn_limpar = QPushButton("🔄 LIMPAR")
-        btn_limpar.setFixedHeight(40)
+        btn_limpar.setFixedHeight(50)
+        btn_limpar.setStyleSheet("""
+            QPushButton {
+                background: qlineargradient(x1:0, y1:0, x2:1, y2:0, stop:0 #e67e22, stop:1 #d35400);
+                color: white;
+                border: none;
+                border-radius: 8px;
+                font-weight: bold;
+                font-size: 14px;
+            }
+            QPushButton:hover {
+                background: qlineargradient(x1:0, y1:0, x2:1, y2:0, stop:0 #d35400, stop:1 #e67e22);
+                border: 2px solid rgba(255,255,255,0.3);
+            }
+        """)
         btn_limpar.clicked.connect(self.limpar_formulario)
         
         btn_salvar = QPushButton("💾 SALVAR COTAÇÃO")
-        btn_salvar.setFixedHeight(40)
-        btn_salvar.setStyleSheet("background-color: #27ae60; color: white; font-weight: bold;")
+        btn_salvar.setFixedHeight(50)
+        btn_salvar.setStyleSheet("""
+            QPushButton {
+                background: qlineargradient(x1:0, y1:0, x2:1, y2:0, stop:0 #27ae60, stop:1 #2ecc71);
+                color: white;
+                border: none;
+                border-radius: 8px;
+                font-weight: bold;
+                font-size: 14px;
+            }
+            QPushButton:hover {
+                background: qlineargradient(x1:0, y1:0, x2:1, y2:0, stop:0 #2ecc71, stop:1 #27ae60);
+                border: 2px solid rgba(255,255,255,0.3);
+            }
+        """)
         btn_salvar.clicked.connect(self.salvar_cotacao)
         
         btn_layout.addWidget(btn_calcular)
@@ -178,49 +356,53 @@ class CotacaoWindow(QWidget):
         btn_layout.addWidget(btn_salvar)
         
         layout.addLayout(btn_layout)
-    
-    def on_valor_frete_changed(self, texto, row):
-        """Formata qualquer valor digitado nos campos de frete"""
+
+    # MÉTODOS DE FUNCIONALIDADE (mantenha os mesmos do código original)
+    def formatar_moeda(self, valor):
+        """Formata qualquer valor digitado para moeda"""
+        try:
+            texto_limpo = re.sub(r'[^\d]', '', str(valor))
+            if not texto_limpo:
+                return ""
+            
+            numero = float(texto_limpo) / 100
+            return f"R$ {numero:,.2f}".replace(',', 'X').replace('.', ',').replace('X', '.')
+        except:
+            return ""
+
+    def on_valor_nf_changed(self, texto):
+        """Formata qualquer valor digitado e calcula Rodocargas"""
         if not texto:
-            self.atualizar_calculos(row)
+            self.limpar_rodocargas()
             return
         
-        # Formata o valor digitado
         texto_formatado = self.formatar_moeda(texto)
         if texto_formatado and texto_formatado != texto:
-            # Encontra o input correto
-            valor_input = self.table_transportadoras.cellWidget(row, 1)
-            if valor_input:
-                valor_input.blockSignals(True)
-                valor_input.setText(texto_formatado)
-                valor_input.setCursorPosition(len(texto_formatado))
-                valor_input.blockSignals(False)
+            self.valor_nf_input.blockSignals(True)
+            self.valor_nf_input.setText(texto_formatado)
+            self.valor_nf_input.setCursorPosition(len(texto_formatado))
+            self.valor_nf_input.blockSignals(False)
         
-        # Atualiza cálculos
-        self.atualizar_calculos(row)
-    
+        self.calcular_rodocargas_automatico()
+
     def parse_number(self, text):
-        """Converte texto para número - VERSÃO CORRIGIDA"""
+        """Converte texto para número"""
         if not text:
             return 0.0
         
         try:
-            # Remove R$ e espaços
             text = str(text).replace('R$', '').replace(' ', '').strip()
             
-            # Se já tem ponto como separador decimal, usa direto
             if '.' in text and text.count('.') == 1:
                 partes = text.split('.')
                 if len(partes) == 2 and partes[1].isdigit():
                     return float(text)
             
-            # Remove pontos de milhar e converte vírgula decimal para ponto
             text = text.replace('.', '').replace(',', '.')
-            
             return float(text) if text else 0.0
         except:
             return 0.0
-    
+
     def get_valor_nf_numerico(self):
         """Retorna o valor da NF como número"""
         return self.parse_number(self.valor_nf_input.text())
@@ -230,7 +412,7 @@ class CotacaoWindow(QWidget):
     
     def get_cubagem_numerico(self):
         return self.parse_number(self.cubagem_input.text())
-    
+
     def carregar_transportadoras(self):
         """Carrega transportadoras do banco"""
         try:
@@ -242,7 +424,7 @@ class CotacaoWindow(QWidget):
             self.atualizar_tabela_transportadoras()
         except Exception as e:
             QMessageBox.critical(self, "Erro", f"Erro ao carregar transportadoras: {e}")
-    
+
     def atualizar_tabela_transportadoras(self):
         """Atualiza a tabela de transportadoras"""
         self.table_transportadoras.setRowCount(len(self.transportadoras))
@@ -256,13 +438,30 @@ class CotacaoWindow(QWidget):
             # Valor Frete
             if transp[1].lower() == "rodocargas":
                 valor_label = QLabel("")
-                valor_label.setStyleSheet("font-weight: bold; color: #2c3e50; background-color: #f8f9fa; padding: 5px;")
+                valor_label.setStyleSheet("""
+                    font-weight: bold; 
+                    color: #2c3e50; 
+                    background-color: #f8f9fa; 
+                    padding: 8px;
+                    border: 1px solid #bdc3c7;
+                    border-radius: 4px;
+                """)
                 valor_label.setAlignment(Qt.AlignCenter)
                 self.table_transportadoras.setCellWidget(row, 1, valor_label)
             else:
                 valor_input = QLineEdit()
                 valor_input.setPlaceholderText("Digite o valor")
-                # CONECTA COM A FORMATAÇÃO AUTOMÁTICA
+                valor_input.setStyleSheet("""
+                    QLineEdit {
+                        padding: 8px;
+                        border: 1px solid #bdc3c7;
+                        border-radius: 4px;
+                        font-size: 11px;
+                    }
+                    QLineEdit:focus {
+                        border-color: #3498db;
+                    }
+                """)
                 valor_input.textChanged.connect(lambda text, r=row: self.on_valor_frete_changed(text, r))
                 self.table_transportadoras.setCellWidget(row, 1, valor_input)
             
@@ -279,9 +478,40 @@ class CotacaoWindow(QWidget):
             # Botão Selecionar
             btn_selecionar = QPushButton("SELECIONAR")
             btn_selecionar.setFixedWidth(100)
+            btn_selecionar.setStyleSheet("""
+                QPushButton {
+                    background: #95a5a6;
+                    color: white;
+                    border: none;
+                    border-radius: 4px;
+                    padding: 8px;
+                    font-weight: bold;
+                    font-size: 10px;
+                }
+                QPushButton:hover {
+                    background: #7f8c8d;
+                }
+            """)
             btn_selecionar.clicked.connect(lambda checked, r=row: self.selecionar_transportadora(r))
             self.table_transportadoras.setCellWidget(row, 4, btn_selecionar)
-    
+
+    def on_valor_frete_changed(self, texto, row):
+        """Formata qualquer valor digitado nos campos de frete"""
+        if not texto:
+            self.atualizar_calculos(row)
+            return
+        
+        texto_formatado = self.formatar_moeda(texto)
+        if texto_formatado and texto_formatado != texto:
+            valor_input = self.table_transportadoras.cellWidget(row, 1)
+            if valor_input:
+                valor_input.blockSignals(True)
+                valor_input.setText(texto_formatado)
+                valor_input.setCursorPosition(len(texto_formatado))
+                valor_input.blockSignals(False)
+        
+        self.atualizar_calculos(row)
+
     def limpar_rodocargas(self):
         """Limpa o valor da Rodocargas"""
         for row, transp in enumerate(self.transportadoras):
@@ -293,7 +523,7 @@ class CotacaoWindow(QWidget):
                 self.table_transportadoras.item(row, 3).setText("")
                 self.rodocargas_info.setVisible(False)
                 break
-    
+
     def calcular_rodocargas_automatico(self):
         """Calcula Rodocargas automaticamente"""
         valor_nf = self.get_valor_nf_numerico()
@@ -318,12 +548,11 @@ class CotacaoWindow(QWidget):
                 
                 self.atualizar_calculos(row)
                 break
-    
+
     def atualizar_calculos(self, row):
-        """Atualiza os cálculos - VERSÃO CORRIGIDA"""
+        """Atualiza os cálculos"""
         try:
             valor_nf = self.get_valor_nf_numerico()
-            print(f"DEBUG - Valor NF: {valor_nf}")  # DEBUG
             
             if valor_nf <= 0:
                 self.table_transportadoras.item(row, 2).setText("0,00%")
@@ -337,31 +566,23 @@ class CotacaoWindow(QWidget):
                 valor_label = self.table_transportadoras.cellWidget(row, 1)
                 if valor_label and valor_label.text():
                     valor_frete = self.parse_number(valor_label.text())
-                    print(f"DEBUG - Rodocargas valor: {valor_frete}")  # DEBUG
             else:
                 valor_input = self.table_transportadoras.cellWidget(row, 1)
                 if valor_input and valor_input.text():
                     valor_frete = self.parse_number(valor_input.text())
-                    print(f"DEBUG - {transportadora[1]} valor: {valor_frete}")  # DEBUG
             
             if valor_frete <= 0:
                 self.table_transportadoras.item(row, 2).setText("0,00%")
                 self.table_transportadoras.item(row, 3).setText("")
                 return
             
-            # CÁLCULO DO PERCENTUAL - CORRIGIDO
             percentual = (valor_frete / valor_nf) * 100
-            print(f"DEBUG - Cálculo: ({valor_frete} / {valor_nf}) × 100 = {percentual}%")  # DEBUG
-            
-            # Atualiza percentual na tabela
             self.table_transportadoras.item(row, 2).setText(f"{percentual:.2f}%".replace('.', ','))
             
-            # Mostra detalhes do cálculo
             detalhes = f"({valor_frete:.2f} / {valor_nf:.2f}) × 100 = {percentual:.2f}%"
             detalhes = detalhes.replace('.', ',')
             self.table_transportadoras.item(row, 3).setText(detalhes)
             
-            # Info da Rodocargas
             if transportadora[1].lower() == "rodocargas":
                 info_text = f"Rodocargas: {transportadora[3] or 14}% + {transportadora[4] or 7}% ICMS = R$ {valor_frete:.2f}"
                 info_text = info_text.replace('.', ',')
@@ -369,23 +590,45 @@ class CotacaoWindow(QWidget):
                 self.rodocargas_info.setVisible(True)
                     
         except Exception as e:
-            print(f"Erro no cálculo linha {row}: {e}")
             self.table_transportadoras.item(row, 2).setText("Erro")
-    
+
     def selecionar_transportadora(self, row):
         """Seleciona transportadora"""
         for i in range(self.table_transportadoras.rowCount()):
             btn = self.table_transportadoras.cellWidget(i, 4)
             if btn:
                 btn.setText("SELECIONAR")
-                btn.setStyleSheet("")
+                btn.setStyleSheet("""
+                    QPushButton {
+                        background: #95a5a6;
+                        color: white;
+                        border: none;
+                        border-radius: 4px;
+                        padding: 8px;
+                        font-weight: bold;
+                        font-size: 10px;
+                    }
+                    QPushButton:hover {
+                        background: #7f8c8d;
+                    }
+                """)
         
         btn_selecionado = self.table_transportadoras.cellWidget(row, 4)
         btn_selecionado.setText("🥇 SELECIONADA")
-        btn_selecionado.setStyleSheet("background-color: #27ae60; color: white; font-weight: bold;")
+        btn_selecionado.setStyleSheet("""
+            QPushButton {
+                background: qlineargradient(x1:0, y1:0, x2:1, y2:0, stop:0 #27ae60, stop:1 #2ecc71);
+                color: white;
+                border: none;
+                border-radius: 4px;
+                padding: 8px;
+                font-weight: bold;
+                font-size: 10px;
+            }
+        """)
         
         self.transportadora_selecionada_id = self.transportadoras[row][0]
-    
+
     def calcular_fretes(self):
         """Calcula todos os fretes"""
         valor_nf = self.get_valor_nf_numerico()
@@ -397,7 +640,7 @@ class CotacaoWindow(QWidget):
         
         for row in range(self.table_transportadoras.rowCount()):
             self.atualizar_calculos(row)
-    
+
     def salvar_cotacao(self):
         """Salva a cotação"""
         try:
@@ -479,7 +722,7 @@ class CotacaoWindow(QWidget):
                 
         except Exception as e:
             QMessageBox.critical(self, "Erro", f"Erro: {e}")
-    
+
     def limpar_formulario(self):
         """Limpa todo o formulário"""
         self.data_input.setDate(QDate.currentDate())
@@ -509,7 +752,20 @@ class CotacaoWindow(QWidget):
             btn = self.table_transportadoras.cellWidget(row, 4)
             if btn:
                 btn.setText("SELECIONAR")
-                btn.setStyleSheet("")
+                btn.setStyleSheet("""
+                    QPushButton {
+                        background: #95a5a6;
+                        color: white;
+                        border: none;
+                        border-radius: 4px;
+                        padding: 8px;
+                        font-weight: bold;
+                        font-size: 10px;
+                    }
+                    QPushButton:hover {
+                        background: #7f8c8d;
+                    }
+                """)
         
         if hasattr(self, 'transportadora_selecionada_id'):
             del self.transportadora_selecionada_id

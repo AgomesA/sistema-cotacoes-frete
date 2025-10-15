@@ -1,3 +1,4 @@
+# historico_window.py - DESIGN PREMIUM COMPLETO E FUNCIONAL
 import sqlite3
 import os
 from PyQt5.QtWidgets import (QWidget, QVBoxLayout, QHBoxLayout, QPushButton, 
@@ -10,7 +11,6 @@ from PyQt5.QtCore import Qt, QDate
 from PyQt5.QtGui import QFont
 from PyQt5.QtPrintSupport import QPrintDialog, QPrinter
 import pandas as pd
-import sqlite3
 
 class EditarCotacaoDialog(QDialog):
     def __init__(self, db, cotacao_id, parent=None):
@@ -20,15 +20,48 @@ class EditarCotacaoDialog(QDialog):
         self.transportadoras_originais = []
         self.setup_ui()
         self.carregar_dados()
-        
+    
     def setup_ui(self):
-        self.setWindowTitle(f"Editar Cotação #{self.cotacao_id}")
+        self.setWindowTitle(f"✏️ Editar Cotação #{self.cotacao_id}")
         self.setModal(True)
-        self.resize(800, 600)
+        self.resize(900, 700)
+        self.setStyleSheet("background: qlineargradient(x1:0, y1:0, x2:1, y2:1, stop:0 #ecf0f1, stop:1 #bdc3c7);")
         
         layout = QVBoxLayout()
+        layout.setContentsMargins(20, 20, 20, 20)
+        layout.setSpacing(15)
+        
+        # Header
+        header = QLabel(f"EDITAR COTAÇÃO #{self.cotacao_id}")
+        header.setFont(QFont("Arial", 16, QFont.Bold))
+        header.setStyleSheet("""
+            color: white; 
+            padding: 20px; 
+            background: qlineargradient(x1:0, y1:0, x2:1, y2:0, stop:0 #3498db, stop:1 #2980b9);
+            border-radius: 10px;
+        """)
+        header.setAlignment(Qt.AlignCenter)
+        layout.addWidget(header)
         
         tabs = QTabWidget()
+        tabs.setStyleSheet("""
+            QTabWidget::pane {
+                border: 2px solid #bdc3c7;
+                border-radius: 8px;
+                background: white;
+            }
+            QTabBar::tab {
+                background: #95a5a6;
+                color: white;
+                padding: 10px 20px;
+                margin-right: 2px;
+                border-top-left-radius: 4px;
+                border-top-right-radius: 4px;
+            }
+            QTabBar::tab:selected {
+                background: #3498db;
+            }
+        """)
         
         self.tab_dados = QWidget()
         self.setup_tab_dados()
@@ -42,9 +75,37 @@ class EditarCotacaoDialog(QDialog):
         
         btn_layout = QHBoxLayout()
         btn_salvar = QPushButton("💾 Salvar Alterações")
+        btn_salvar.setFixedHeight(45)
+        btn_salvar.setStyleSheet("""
+            QPushButton {
+                background: qlineargradient(x1:0, y1:0, x2:1, y2:0, stop:0 #27ae60, stop:1 #2ecc71);
+                color: white;
+                border: none;
+                border-radius: 8px;
+                font-weight: bold;
+                font-size: 14px;
+            }
+            QPushButton:hover {
+                background: qlineargradient(x1:0, y1:0, x2:1, y2:0, stop:0 #2ecc71, stop:1 #27ae60);
+            }
+        """)
         btn_salvar.clicked.connect(self.salvar_alteracoes)
         
         btn_cancelar = QPushButton("❌ Cancelar")
+        btn_cancelar.setFixedHeight(45)
+        btn_cancelar.setStyleSheet("""
+            QPushButton {
+                background: qlineargradient(x1:0, y1:0, x2:1, y2:0, stop:0 #e74c3c, stop:1 #c0392b);
+                color: white;
+                border: none;
+                border-radius: 8px;
+                font-weight: bold;
+                font-size: 14px;
+            }
+            QPushButton:hover {
+                background: qlineargradient(x1:0, y1:0, x2:1, y2:0, stop:0 #c0392b, stop:1 #e74c3c);
+            }
+        """)
         btn_cancelar.clicked.connect(self.reject)
         
         btn_layout.addWidget(btn_salvar)
@@ -55,27 +116,43 @@ class EditarCotacaoDialog(QDialog):
     
     def setup_tab_dados(self):
         layout = QFormLayout()
+        layout.setLabelAlignment(Qt.AlignRight)
+        layout.setVerticalSpacing(15)
+        layout.setHorizontalSpacing(20)
         
         self.data_input = QDateEdit()
         self.data_input.setDisplayFormat("dd/MM/yyyy")
+        self.data_input.setStyleSheet("padding: 10px; border: 2px solid #bdc3c7; border-radius: 6px;")
         
         self.fornecedor_input = QLineEdit()
+        self.fornecedor_input.setStyleSheet("padding: 10px; border: 2px solid #bdc3c7; border-radius: 6px;")
+        
         self.pedido_input = QLineEdit()
+        self.pedido_input.setStyleSheet("padding: 10px; border: 2px solid #bdc3c7; border-radius: 6px;")
+        
         self.valor_nf_input = QLineEdit()
+        self.valor_nf_input.setStyleSheet("padding: 10px; border: 2px solid #bdc3c7; border-radius: 6px;")
+        
         self.peso_input = QLineEdit()
+        self.peso_input.setStyleSheet("padding: 10px; border: 2px solid #bdc3c7; border-radius: 6px;")
+        
         self.volume_input = QLineEdit()
+        self.volume_input.setStyleSheet("padding: 10px; border: 2px solid #bdc3c7; border-radius: 6px;")
+        
         self.cubagem_input = QLineEdit()
+        self.cubagem_input.setStyleSheet("padding: 10px; border: 2px solid #bdc3c7; border-radius: 6px;")
         
         self.ganhadora_combo = QComboBox()
+        self.ganhadora_combo.setStyleSheet("padding: 10px; border: 2px solid #bdc3c7; border-radius: 6px;")
         
-        layout.addRow("Data:", self.data_input)
-        layout.addRow("Fornecedor*:", self.fornecedor_input)
-        layout.addRow("Nº Pedido:", self.pedido_input)
-        layout.addRow("Valor NF*:", self.valor_nf_input)
-        layout.addRow("Peso:", self.peso_input)
-        layout.addRow("Volume:", self.volume_input)
-        layout.addRow("Cubagem:", self.cubagem_input)
-        layout.addRow("Transportadora Ganhadora:", self.ganhadora_combo)
+        layout.addRow("📅 Data:", self.data_input)
+        layout.addRow("🏢 Fornecedor*:", self.fornecedor_input)
+        layout.addRow("📋 Nº Pedido:", self.pedido_input)
+        layout.addRow("💰 Valor NF*:", self.valor_nf_input)
+        layout.addRow("⚖️ Peso:", self.peso_input)
+        layout.addRow("📦 Volume:", self.volume_input)
+        layout.addRow("📐 Cubagem:", self.cubagem_input)
+        layout.addRow("🏆 Transportadora Ganhadora:", self.ganhadora_combo)
         
         self.tab_dados.setLayout(layout)
     
@@ -88,6 +165,22 @@ class EditarCotacaoDialog(QDialog):
             "Transportadora", "Valor Frete", "Ação", "Selecionada"
         ])
         
+        self.tabela_transportadoras.setStyleSheet("""
+            QTableWidget {
+                background: white;
+                border: 2px solid #bdc3c7;
+                border-radius: 8px;
+                gridline-color: #ecf0f1;
+            }
+            QHeaderView::section {
+                background-color: #34495e;
+                color: white;
+                padding: 12px;
+                border: none;
+                font-weight: bold;
+            }
+        """)
+        
         header = self.tabela_transportadoras.horizontalHeader()
         header.setSectionResizeMode(0, QHeaderView.Stretch)
         header.setSectionResizeMode(1, QHeaderView.ResizeToContents)
@@ -97,12 +190,26 @@ class EditarCotacaoDialog(QDialog):
         layout.addWidget(self.tabela_transportadoras)
         
         btn_add = QPushButton("➕ Adicionar Transportadora")
+        btn_add.setFixedHeight(40)
+        btn_add.setStyleSheet("""
+            QPushButton {
+                background: #3498db;
+                color: white;
+                border: none;
+                border-radius: 6px;
+                font-weight: bold;
+            }
+            QPushButton:hover {
+                background: #2980b9;
+            }
+        """)
         btn_add.clicked.connect(self.adicionar_transportadora)
         layout.addWidget(btn_add)
         
         self.tab_transportadoras.setLayout(layout)
     
     def carregar_dados(self):
+        """Carrega os dados da cotação para edição"""
         try:
             conn = self.db.get_connection()
             cursor = conn.cursor()
@@ -151,6 +258,7 @@ class EditarCotacaoDialog(QDialog):
             QMessageBox.critical(self, "Erro", f"Erro ao carregar dados: {e}")
     
     def carregar_transportadoras(self):
+        """Carrega as transportadoras na tabela"""
         self.tabela_transportadoras.setRowCount(len(self.transportadoras_originais))
         
         for row, transp in enumerate(self.transportadoras_originais):
@@ -163,6 +271,19 @@ class EditarCotacaoDialog(QDialog):
             
             btn_remover = QPushButton("🗑️ Remover")
             btn_remover.setEnabled(transp[1].lower() != "rodocargas")
+            btn_remover.setStyleSheet("""
+                QPushButton {
+                    background: #e74c3c;
+                    color: white;
+                    border: none;
+                    border-radius: 4px;
+                    padding: 5px;
+                    font-size: 10px;
+                }
+                QPushButton:hover {
+                    background: #c0392b;
+                }
+            """)
             btn_remover.clicked.connect(lambda checked, r=row: self.remover_transportadora(r))
             self.tabela_transportadoras.setCellWidget(row, 2, btn_remover)
             
@@ -171,8 +292,11 @@ class EditarCotacaoDialog(QDialog):
             self.tabela_transportadoras.setItem(row, 3, selecionada_item)
     
     def adicionar_transportadora(self):
+        """Adiciona uma nova transportadora à cotação"""
         dialog = QDialog(self)
         dialog.setWindowTitle("Adicionar Transportadora")
+        dialog.setFixedSize(400, 200)
+        
         layout = QVBoxLayout()
         
         combo = QComboBox()
@@ -192,10 +316,13 @@ class EditarCotacaoDialog(QDialog):
         
         valor_input = QLineEdit()
         valor_input.setPlaceholderText("Valor do frete")
+        valor_input.setStyleSheet("padding: 8px; border: 1px solid #bdc3c7; border-radius: 4px;")
         
         btn_layout = QHBoxLayout()
         btn_ok = QPushButton("Adicionar")
+        btn_ok.setStyleSheet("background: #27ae60; color: white; border: none; padding: 8px; border-radius: 4px;")
         btn_cancelar = QPushButton("Cancelar")
+        btn_cancelar.setStyleSheet("background: #95a5a6; color: white; border: none; padding: 8px; border-radius: 4px;")
         
         btn_ok.clicked.connect(dialog.accept)
         btn_cancelar.clicked.connect(dialog.reject)
@@ -225,6 +352,7 @@ class EditarCotacaoDialog(QDialog):
                 QMessageBox.warning(self, "Aviso", "Valor do frete inválido!")
     
     def remover_transportadora(self, row):
+        """Remove uma transportadora da cotação"""
         transportadora = self.transportadoras_originais[row]
         if transportadora[1].lower() == "rodocargas":
             QMessageBox.warning(self, "Aviso", "Não é possível remover a Rodocargas!")
@@ -241,6 +369,7 @@ class EditarCotacaoDialog(QDialog):
             self.carregar_transportadoras()
     
     def salvar_alteracoes(self):
+        """Salva as alterações da cotação"""
         try:
             if not self.fornecedor_input.text().strip():
                 QMessageBox.warning(self, "Aviso", "Informe o fornecedor!")
@@ -308,10 +437,16 @@ class HistoricoWindow(QWidget):
         self.carregar_cotacoes()
     
     def setup_ui(self):
+        """Configura a interface com design premium"""
         main_layout = QHBoxLayout()
+        main_layout.setContentsMargins(0, 0, 0, 0)
         self.setLayout(main_layout)
         
+        # Aplicar fundo gradiente
+        self.setStyleSheet("background: qlineargradient(x1:0, y1:0, x2:1, y2:1, stop:0 #ecf0f1, stop:1 #bdc3c7);")
+        
         splitter = QSplitter(Qt.Horizontal)
+        splitter.setStyleSheet("QSplitter::handle { background: #95a5a6; }")
         
         self.setup_painel_lista(splitter)
         self.setup_painel_detalhes(splitter)
@@ -320,25 +455,36 @@ class HistoricoWindow(QWidget):
         main_layout.addWidget(splitter)
     
     def setup_painel_lista(self, splitter):
+        """Configura o painel da lista com design premium"""
         painel_lista = QWidget()
+        painel_lista.setStyleSheet("background: rgba(255,255,255,0.9);")
+        
         layout_lista = QVBoxLayout()
         layout_lista.setContentsMargins(0, 0, 0, 0)
         layout_lista.setSpacing(0)
         
-        # Splitter vertical para separar parte fixa e rolável
+        # Splitter vertical
         splitter_vertical = QSplitter(Qt.Vertical)
         splitter_vertical.setChildrenCollapsible(False)
+        splitter_vertical.setStyleSheet("QSplitter::handle { background: #95a5a6; }")
         
         # Parte superior fixa
         parte_superior = QWidget()
+        parte_superior.setStyleSheet("background: white;")
         layout_superior = QVBoxLayout(parte_superior)
-        layout_superior.setContentsMargins(5, 5, 5, 5)
+        layout_superior.setContentsMargins(15, 15, 15, 15)
+        layout_superior.setSpacing(15)
         
         # Título
         title = QLabel("📋 HISTÓRICO DE COTAÇÕES")
-        title.setFont(QFont("Arial", 14, QFont.Bold))
+        title.setFont(QFont("Arial", 16, QFont.Bold))
         title.setAlignment(Qt.AlignCenter)
-        title.setStyleSheet("padding: 10px; background-color: #f8f9fa; border-bottom: 1px solid #dee2e6;")
+        title.setStyleSheet("""
+            color: white; 
+            padding: 15px; 
+            background: qlineargradient(x1:0, y1:0, x2:1, y2:0, stop:0 #3498db, stop:1 #2980b9);
+            border-radius: 10px;
+        """)
         layout_superior.addWidget(title)
         
         # Filtros
@@ -347,9 +493,10 @@ class HistoricoWindow(QWidget):
         # Parte inferior rolável (tabela)
         parte_inferior = QWidget()
         layout_inferior = QVBoxLayout(parte_inferior)
-        layout_inferior.setContentsMargins(0, 0, 0, 0)
+        layout_inferior.setContentsMargins(15, 15, 15, 15)
+        layout_inferior.setSpacing(15)
         
-        # Tabela de cotações - COM 10 COLUNAS
+        # Tabela de cotações premium
         self.tabela_cotacoes = QTableWidget()
         self.tabela_cotacoes.setColumnCount(10)
         self.tabela_cotacoes.setHorizontalHeaderLabels([
@@ -357,33 +504,97 @@ class HistoricoWindow(QWidget):
             "Transportadora", "Frete", "Percentual do Frete"
         ])
         
+        # Estilo premium da tabela
+        self.tabela_cotacoes.setStyleSheet("""
+            QTableWidget {
+                background: white;
+                border: 2px solid #bdc3c7;
+                border-radius: 8px;
+                gridline-color: #ecf0f1;
+                font-size: 11px;
+            }
+            QHeaderView::section {
+                background-color: #34495e;
+                color: white;
+                padding: 12px;
+                border: none;
+                font-weight: bold;
+            }
+            QTableWidget::item {
+                padding: 10px;
+                border-bottom: 1px solid #ecf0f1;
+            }
+            QTableWidget::item:selected {
+                background-color: #3498db;
+                color: white;
+            }
+        """)
+        
         header = self.tabela_cotacoes.horizontalHeader()
-        header.setSectionResizeMode(0, QHeaderView.ResizeToContents)  # ID
-        header.setSectionResizeMode(1, QHeaderView.ResizeToContents)  # Data
-        header.setSectionResizeMode(2, QHeaderView.Stretch)           # Fornecedor
-        header.setSectionResizeMode(3, QHeaderView.ResizeToContents)  # Valor NF
-        header.setSectionResizeMode(4, QHeaderView.ResizeToContents)  # Peso
-        header.setSectionResizeMode(5, QHeaderView.ResizeToContents)  # Volume
-        header.setSectionResizeMode(6, QHeaderView.ResizeToContents)  # Cubagem
-        header.setSectionResizeMode(7, QHeaderView.ResizeToContents)  # Transportadora
-        header.setSectionResizeMode(8, QHeaderView.ResizeToContents)  # Frete
-        header.setSectionResizeMode(9, QHeaderView.ResizeToContents)  # Percentual do Frete
+        header.setSectionResizeMode(0, QHeaderView.ResizeToContents)
+        header.setSectionResizeMode(1, QHeaderView.ResizeToContents)
+        header.setSectionResizeMode(2, QHeaderView.Stretch)
+        header.setSectionResizeMode(3, QHeaderView.ResizeToContents)
+        header.setSectionResizeMode(4, QHeaderView.ResizeToContents)
+        header.setSectionResizeMode(5, QHeaderView.ResizeToContents)
+        header.setSectionResizeMode(6, QHeaderView.ResizeToContents)
+        header.setSectionResizeMode(7, QHeaderView.ResizeToContents)
+        header.setSectionResizeMode(8, QHeaderView.ResizeToContents)
+        header.setSectionResizeMode(9, QHeaderView.ResizeToContents)
         
         self.tabela_cotacoes.setSelectionBehavior(QTableWidget.SelectRows)
         self.tabela_cotacoes.cellClicked.connect(self.carregar_detalhes_cotacao)
-        
         layout_inferior.addWidget(self.tabela_cotacoes)
         
         # Botões de ação
         btn_layout = QHBoxLayout()
         
         btn_atualizar = QPushButton("🔄 ATUALIZAR")
+        btn_atualizar.setStyleSheet("""
+            QPushButton {
+                background: #3498db;
+                color: white;
+                border: none;
+                border-radius: 6px;
+                padding: 10px;
+                font-weight: bold;
+            }
+            QPushButton:hover {
+                background: #2980b9;
+            }
+        """)
         btn_atualizar.clicked.connect(self.carregar_cotacoes)
         
         btn_limpar_filtros = QPushButton("🧹 LIMPAR FILTROS")
+        btn_limpar_filtros.setStyleSheet("""
+            QPushButton {
+                background: #e67e22;
+                color: white;
+                border: none;
+                border-radius: 6px;
+                padding: 10px;
+                font-weight: bold;
+            }
+            QPushButton:hover {
+                background: #d35400;
+            }
+        """)
         btn_limpar_filtros.clicked.connect(self.limpar_filtros)
         
         btn_exportar = QPushButton("📊 EXPORTAR EXCEL")
+        btn_exportar.setStyleSheet("""
+            QPushButton {
+                background: #27ae60;
+                color: white;
+                border: none;
+                border-radius: 6px;
+                padding: 10px;
+                font-weight: bold;
+            }
+            QPushButton:hover {
+                background: #2ecc71;
+            }
+        """)
         btn_exportar.clicked.connect(self.exportar_excel)
         
         btn_layout.addWidget(btn_atualizar)
@@ -395,28 +606,48 @@ class HistoricoWindow(QWidget):
         # Adiciona as partes ao splitter vertical
         splitter_vertical.addWidget(parte_superior)
         splitter_vertical.addWidget(parte_inferior)
-        
-        # Configura as proporções (parte superior menor, parte inferior maior)
-        splitter_vertical.setSizes([150, 400])
+        splitter_vertical.setSizes([200, 400])
         
         layout_lista.addWidget(splitter_vertical)
         painel_lista.setLayout(layout_lista)
         splitter.addWidget(painel_lista)
     
     def setup_filtros(self, layout):
+        """Configura os filtros com design premium"""
         group_filtros = QGroupBox("🔍 FILTROS")
+        group_filtros.setStyleSheet("""
+            QGroupBox {
+                font-weight: bold;
+                font-size: 14px;
+                color: #2c3e50;
+                border: 2px solid #bdc3c7;
+                border-radius: 10px;
+                margin-top: 10px;
+                padding-top: 10px;
+                background: white;
+            }
+            QGroupBox::title {
+                subcontrol-origin: margin;
+                left: 10px;
+                padding: 0 10px 0 10px;
+                background: white;
+            }
+        """)
+        
         layout_filtros = QVBoxLayout()
         
         linha_data = QHBoxLayout()
-        linha_data.addWidget(QLabel("Data:"))
+        linha_data.addWidget(QLabel("📅 Data:"))
         self.filtro_data_inicio = QDateEdit()
         self.filtro_data_inicio.setDate(QDate.currentDate().addDays(-30))
         self.filtro_data_inicio.setDisplayFormat("dd/MM/yyyy")
+        self.filtro_data_inicio.setStyleSheet("padding: 8px; border: 1px solid #bdc3c7; border-radius: 4px;")
         self.filtro_data_inicio.dateChanged.connect(self.aplicar_filtros)
         
         self.filtro_data_fim = QDateEdit()
         self.filtro_data_fim.setDate(QDate.currentDate())
         self.filtro_data_fim.setDisplayFormat("dd/MM/yyyy")
+        self.filtro_data_fim.setStyleSheet("padding: 8px; border: 1px solid #bdc3c7; border-radius: 4px;")
         self.filtro_data_fim.dateChanged.connect(self.aplicar_filtros)
         
         linha_data.addWidget(self.filtro_data_inicio)
@@ -426,14 +657,16 @@ class HistoricoWindow(QWidget):
         
         linha_busca = QHBoxLayout()
         
-        label_fornecedor = QLabel("Fornecedor:")
+        label_fornecedor = QLabel("🏢 Fornecedor:")
         self.filtro_fornecedor_input = QLineEdit()
         self.filtro_fornecedor_input.setPlaceholderText("Buscar fornecedor...")
+        self.filtro_fornecedor_input.setStyleSheet("padding: 8px; border: 1px solid #bdc3c7; border-radius: 4px;")
         self.filtro_fornecedor_input.textChanged.connect(self.aplicar_filtros)
         
-        label_transportadora = QLabel("Transportadora:")
+        label_transportadora = QLabel("🚛 Transportadora:")
         self.filtro_transportadora_input = QLineEdit()
         self.filtro_transportadora_input.setPlaceholderText("Buscar transportadora...")
+        self.filtro_transportadora_input.setStyleSheet("padding: 8px; border: 1px solid #bdc3c7; border-radius: 4px;")
         self.filtro_transportadora_input.textChanged.connect(self.aplicar_filtros)
         
         linha_busca.addWidget(label_fornecedor)
@@ -449,53 +682,47 @@ class HistoricoWindow(QWidget):
         layout.addWidget(group_filtros)
     
     def setup_painel_detalhes(self, splitter):
+        """Configura o painel de detalhes com design premium"""
         painel_detalhes = QWidget()
+        painel_detalhes.setStyleSheet("background: rgba(255,255,255,0.9);")
+        
         layout_detalhes = QVBoxLayout()
         layout_detalhes.setContentsMargins(0, 0, 0, 0)
         layout_detalhes.setSpacing(0)
         
-        # Título dos detalhes - FIXO
+        # Título dos detalhes
         self.titulo_detalhes = QLabel("👀 SELECIONE UMA COTAÇÃO")
-        self.titulo_detalhes.setFont(QFont("Arial", 14, QFont.Bold))
+        self.titulo_detalhes.setFont(QFont("Arial", 16, QFont.Bold))
         self.titulo_detalhes.setAlignment(Qt.AlignCenter)
         self.titulo_detalhes.setStyleSheet("""
             color: #7f8c8d; 
-            padding: 15px; 
-            background-color: #f8f9fa; 
-            border-bottom: 2px solid #dee2e6;
-            margin: 0px;
+            padding: 20px; 
+            background: qlineargradient(x1:0, y1:0, x2:1, y2:0, stop:0 #95a5a6, stop:1 #7f8c8d);
+            color: white;
+            border-bottom: 3px solid #6c7a89;
         """)
-        self.titulo_detalhes.setFixedHeight(60)
         layout_detalhes.addWidget(self.titulo_detalhes)
         
-        # Botões de ação - FIXOS
+        # Botões de ação
         self.botoes_acao_widget = QWidget()
-        self.botoes_acao_widget.setFixedHeight(50)
+        self.botoes_acao_widget.setFixedHeight(60)
+        self.botoes_acao_widget.setStyleSheet("background: #f8f9fa; border-bottom: 1px solid #bdc3c7;")
         self.botoes_acao_layout = QHBoxLayout(self.botoes_acao_widget)
-        self.botoes_acao_layout.setContentsMargins(10, 5, 10, 5)
+        self.botoes_acao_layout.setContentsMargins(15, 10, 15, 10)
         self.setup_botoes_acao()
         layout_detalhes.addWidget(self.botoes_acao_widget)
         
-        # Linha separadora - FIXA
-        linha_separadora = QFrame()
-        linha_separadora.setFrameShape(QFrame.HLine)
-        linha_separadora.setFrameShadow(QFrame.Sunken)
-        linha_separadora.setStyleSheet("background-color: #bdc3c7; margin: 0px;")
-        linha_separadora.setFixedHeight(2)
-        layout_detalhes.addWidget(linha_separadora)
-        
-        # Área de conteúdo dos detalhes - COM SCROLL para evitar problemas de posicionamento
+        # Área de conteúdo dos detalhes
         scroll_area = QScrollArea()
         scroll_area.setWidgetResizable(True)
-        scroll_area.setHorizontalScrollBarPolicy(Qt.ScrollBarAsNeeded)
-        scroll_area.setVerticalScrollBarPolicy(Qt.ScrollBarAsNeeded)
+        scroll_area.setStyleSheet("QScrollArea { border: none; background: transparent; }")
         
         self.conteudo_detalhes = QWidget()
         self.layout_conteudo = QVBoxLayout(self.conteudo_detalhes)
-        self.layout_conteudo.setContentsMargins(10, 10, 10, 10)
-        self.layout_conteudo.setSpacing(10)
+        self.layout_conteudo.setContentsMargins(20, 20, 20, 20)
+        self.layout_conteudo.setSpacing(15)
         
-        # Adiciona um widget vazio inicialmente
+        # Label vazio inicial
         self.label_vazio = QLabel("Selecione uma cotação para visualizar os detalhes")
         self.label_vazio.setAlignment(Qt.AlignCenter)
         self.label_vazio.setStyleSheet("color: #95a5a6; font-size: 16px; padding: 50px;")
@@ -508,6 +735,7 @@ class HistoricoWindow(QWidget):
         splitter.addWidget(painel_detalhes)
     
     def setup_botoes_acao(self):
+        """Configura os botões de ação com design premium"""
         # Limpa botões anteriores
         for i in reversed(range(self.botoes_acao_layout.count())): 
             item = self.botoes_acao_layout.itemAt(i)
@@ -516,19 +744,83 @@ class HistoricoWindow(QWidget):
         
         if self.cotacao_selecionada_id:
             btn_editar = QPushButton("✏️ EDITAR")
+            btn_editar.setStyleSheet("""
+                QPushButton {
+                    background: #3498db;
+                    color: white;
+                    border: none;
+                    border-radius: 6px;
+                    padding: 10px 15px;
+                    font-weight: bold;
+                }
+                QPushButton:hover {
+                    background: #2980b9;
+                }
+            """)
             btn_editar.clicked.connect(self.editar_cotacao)
             
             btn_imprimir = QPushButton("🖨️ IMPRIMIR")
+            btn_imprimir.setStyleSheet("""
+                QPushButton {
+                    background: #95a5a6;
+                    color: white;
+                    border: none;
+                    border-radius: 6px;
+                    padding: 10px 15px;
+                    font-weight: bold;
+                }
+                QPushButton:hover {
+                    background: #7f8c8d;
+                }
+            """)
             btn_imprimir.clicked.connect(self.imprimir_cotacao)
             
             btn_pdf = QPushButton("📄 EXPORTAR PDF")
+            btn_pdf.setStyleSheet("""
+                QPushButton {
+                    background: #e74c3c;
+                    color: white;
+                    border: none;
+                    border-radius: 6px;
+                    padding: 10px 15px;
+                    font-weight: bold;
+                }
+                QPushButton:hover {
+                    background: #c0392b;
+                }
+            """)
             btn_pdf.clicked.connect(self.exportar_pdf)
             
             btn_excel = QPushButton("📊 EXPORTAR EXCEL")
+            btn_excel.setStyleSheet("""
+                QPushButton {
+                    background: #27ae60;
+                    color: white;
+                    border: none;
+                    border-radius: 6px;
+                    padding: 10px 15px;
+                    font-weight: bold;
+                }
+                QPushButton:hover {
+                    background: #2ecc71;
+                }
+            """)
             btn_excel.clicked.connect(self.exportar_excel_cotacao)
             
             btn_excluir = QPushButton("🗑️ EXCLUIR")
-            btn_excluir.setStyleSheet("background-color: #e74c3c; color: white;")
+            btn_excluir.setStyleSheet("""
+                QPushButton {
+                    background: #e74c3c;
+                    color: white;
+                    border: none;
+                    border-radius: 6px;
+                    padding: 10px 15px;
+                    font-weight: bold;
+                }
+                QPushButton:hover {
+                    background: #c0392b;
+                }
+            """)
             btn_excluir.clicked.connect(self.excluir_cotacao)
             
             self.botoes_acao_layout.addWidget(btn_editar)
@@ -538,14 +830,17 @@ class HistoricoWindow(QWidget):
             self.botoes_acao_layout.addWidget(btn_excluir)
         
         self.botoes_acao_layout.addStretch()
-    
+
+    # MÉTODOS DE FUNCIONALIDADE
     def carregar_cotacoes(self):
+        """Carrega as cotações do banco"""
         try:
             self.aplicar_filtros()
         except Exception as e:
             QMessageBox.critical(self, "Erro", f"Erro ao carregar cotações: {e}")
-    
+
     def aplicar_filtros(self):
+        """Aplica os filtros na lista de cotações"""
         try:
             conn = self.db.get_connection()
             cursor = conn.cursor()
@@ -649,8 +944,9 @@ class HistoricoWindow(QWidget):
             
         except Exception as e:
             QMessageBox.critical(self, "Erro", f"Erro ao aplicar filtros: {e}")
-    
+
     def carregar_detalhes_cotacao(self, row, column):
+        """Carrega os detalhes da cotação selecionada"""
         try:
             cotacao_id = int(self.tabela_cotacoes.item(row, 0).text())
             self.cotacao_selecionada_id = cotacao_id
@@ -688,16 +984,16 @@ class HistoricoWindow(QWidget):
                 
         except Exception as e:
             QMessageBox.critical(self, "Erro", f"Erro ao carregar detalhes: {e}")
-    
+
     def mostrar_detalhes_cotacao(self, cotacao, transportadoras):
-        """Mostra os detalhes da cotação selecionada com posicionamento correto"""
+        """Mostra os detalhes da cotação selecionada com design premium"""
         # Remove o label vazio se existir
         if self.label_vazio and self.label_vazio.parent():
             self.layout_conteudo.removeWidget(self.label_vazio)
             self.label_vazio.setParent(None)
             self.label_vazio = None
         
-        # Limpa conteúdo anterior completamente
+        # Limpa conteúdo anterior
         self.limpar_conteudo_detalhes()
         
         # Atualiza título
@@ -705,49 +1001,65 @@ class HistoricoWindow(QWidget):
         data_formatada = data_obj.toString("dd/MM/yyyy")
         self.titulo_detalhes.setText(f"👀 COTAÇÃO #{self.cotacao_selecionada_id} - {data_formatada}")
         self.titulo_detalhes.setStyleSheet("""
-            color: #2c3e50; 
-            padding: 15px; 
-            background-color: #f8f9fa; 
-            border-bottom: 2px solid #dee2e6;
-            margin: 0px;
+            color: white; 
+            padding: 20px; 
+            background: qlineargradient(x1:0, y1:0, x2:1, y2:0, stop:0 #3498db, stop:1 #2980b9);
+            border-bottom: 3px solid #2471a3;
         """)
         
-        # Grupo: Dados do Fornecedor - SEMPRE NA MESMA POSIÇÃO
+        # Grupo: Dados do Fornecedor
         group_fornecedor = QGroupBox("📦 DADOS DO FORNECEDOR")
-        group_fornecedor.setStyleSheet("QGroupBox { font-weight: bold; }")
-        layout_fornecedor = QFormLayout()
-        layout_fornecedor.setVerticalSpacing(8)
-        layout_fornecedor.setHorizontalSpacing(15)
+        group_fornecedor.setStyleSheet("""
+            QGroupBox {
+                font-weight: bold;
+                font-size: 14px;
+                color: #2c3e50;
+                border: 2px solid #3498db;
+                border-radius: 10px;
+                margin-top: 10px;
+                padding-top: 10px;
+                background: white;
+            }
+            QGroupBox::title {
+                subcontrol-origin: margin;
+                left: 10px;
+                padding: 0 10px 0 10px;
+                background: white;
+            }
+        """)
         
-        # Adiciona os dados do fornecedor - POSIÇÃO FIXA
-        layout_fornecedor.addRow("Data:", QLabel(data_formatada))
-        layout_fornecedor.addRow("Fornecedor:", QLabel(cotacao[1]))
-        layout_fornecedor.addRow("Nº Pedido:", QLabel(cotacao[2] if cotacao[2] else "-"))
+        layout_fornecedor = QFormLayout()
+        layout_fornecedor.setVerticalSpacing(10)
+        layout_fornecedor.setHorizontalSpacing(20)
+        
+        layout_fornecedor.addRow("📅 Data:", QLabel(data_formatada))
+        layout_fornecedor.addRow("🏢 Fornecedor:", QLabel(cotacao[1]))
+        layout_fornecedor.addRow("📋 Nº Pedido:", QLabel(cotacao[2] if cotacao[2] else "-"))
         
         valor_nf = f"R$ {cotacao[3]:,.2f}".replace(',', 'X').replace('.', ',').replace('X', '.')
-        layout_fornecedor.addRow("Valor NF:", QLabel(valor_nf))
+        layout_fornecedor.addRow("💰 Valor NF:", QLabel(valor_nf))
         
         if cotacao[4]:
             peso = f"{cotacao[4]:.3f} kg".replace('.', ',')
-            layout_fornecedor.addRow("Peso:", QLabel(peso))
+            layout_fornecedor.addRow("⚖️ Peso:", QLabel(peso))
         else:
-            layout_fornecedor.addRow("Peso:", QLabel("-"))
+            layout_fornecedor.addRow("⚖️ Peso:", QLabel("-"))
         
         if cotacao[5]:
-            layout_fornecedor.addRow("Volume:", QLabel(str(cotacao[5])))
+            layout_fornecedor.addRow("📦 Volume:", QLabel(str(cotacao[5])))
         else:
-            layout_fornecedor.addRow("Volume:", QLabel("-"))
+            layout_fornecedor.addRow("📦 Volume:", QLabel("-"))
         
         if cotacao[6]:
             cubagem = f"{cotacao[6]:.3f} m³".replace('.', ',')
-            layout_fornecedor.addRow("Cubagem:", QLabel(cubagem))
+            layout_fornecedor.addRow("📐 Cubagem:", QLabel(cubagem))
         else:
-            layout_fornecedor.addRow("Cubagem:", QLabel("-"))
+            layout_fornecedor.addRow("📐 Cubagem:", QLabel("-"))
         
         transportadora_ganhadora = cotacao[7] if cotacao[7] else "Nenhuma selecionada"
         label_ganhadora = QLabel(transportadora_ganhadora)
         if cotacao[7]:
-            label_ganhadora.setStyleSheet("color: #27ae60; font-weight: bold; font-size: 12px;")
+            label_ganhadora.setStyleSheet("color: #27ae60; font-weight: bold; font-size: 12px; background: #d5f4e6; padding: 5px; border-radius: 4px;")
         else:
             label_ganhadora.setStyleSheet("color: #7f8c8d; font-style: italic;")
         layout_fornecedor.addRow("🏆 Transportadora Ganhadora:", label_ganhadora)
@@ -755,9 +1067,27 @@ class HistoricoWindow(QWidget):
         group_fornecedor.setLayout(layout_fornecedor)
         self.layout_conteudo.addWidget(group_fornecedor)
         
-        # Grupo: Comparação de Transportadoras - SEMPRE NA MESMA POSIÇÃO
+        # Grupo: Comparação de Transportadoras
         group_comparacao = QGroupBox("🚛 COMPARAÇÃO DE TRANSPORTADORAS")
-        group_comparacao.setStyleSheet("QGroupBox { font-weight: bold; }")
+        group_comparacao.setStyleSheet("""
+            QGroupBox {
+                font-weight: bold;
+                font-size: 14px;
+                color: #2c3e50;
+                border: 2px solid #e67e22;
+                border-radius: 10px;
+                margin-top: 10px;
+                padding-top: 10px;
+                background: white;
+            }
+            QGroupBox::title {
+                subcontrol-origin: margin;
+                left: 10px;
+                padding: 0 10px 0 10px;
+                background: white;
+            }
+        """)
+        
         layout_comparacao = QVBoxLayout()
         
         tabela_comparacao = QTableWidget()
@@ -766,24 +1096,40 @@ class HistoricoWindow(QWidget):
             "Transportadora", "Valor Frete", "Percentual", "Status"
         ])
         
+        tabela_comparacao.setStyleSheet("""
+            QTableWidget {
+                background: white;
+                border: 1px solid #bdc3c7;
+                border-radius: 6px;
+                gridline-color: #ecf0f1;
+            }
+            QHeaderView::section {
+                background-color: #34495e;
+                color: white;
+                padding: 10px;
+                border: none;
+                font-weight: bold;
+            }
+        """)
+        
         tabela_comparacao.setRowCount(len(transportadoras))
         
         for row, transp in enumerate(transportadoras):
-            # Transportadora - SEM FUNDO COLORIDO
+            # Transportadora
             nome_item = QTableWidgetItem(transp[0])
             tabela_comparacao.setItem(row, 0, nome_item)
             
-            # Valor Frete - SEM FUNDO COLORIDO
+            # Valor Frete
             valor_frete = f"R$ {transp[1]:,.2f}".replace(',', 'X').replace('.', ',').replace('X', '.')
             valor_item = QTableWidgetItem(valor_frete)
             tabela_comparacao.setItem(row, 1, valor_item)
             
-            # Percentual - SEM FUNDO COLORIDO
+            # Percentual
             percentual = f"{transp[3]:.2f}%"
             percentual_item = QTableWidgetItem(percentual)
             tabela_comparacao.setItem(row, 2, percentual_item)
             
-            # Status - APENAS ESTA COLUNA TEM FUNDO VERDE quando selecionada
+            # Status
             status = "🥇 SELECIONADA" if transp[2] else ""
             status_item = QTableWidgetItem(status)
             if transp[2]:
@@ -803,91 +1149,29 @@ class HistoricoWindow(QWidget):
         group_comparacao.setLayout(layout_comparacao)
         self.layout_conteudo.addWidget(group_comparacao)
         
-        # Análise da Rodocargas (se presente) - POSIÇÃO FIXA
-        rodocargas_data = next((t for t in transportadoras if t[0].lower() == "rodocargas"), None)
-        if rodocargas_data:
-            self.mostrar_analise_rodocargas(rodocargas_data, cotacao[3])
-        
-        # Adiciona um stretch no final para manter o alinhamento
+        # Adiciona um stretch no final
         self.layout_conteudo.addStretch()
-    
+
     def limpar_conteudo_detalhes(self):
-        """Limpa completamente o conteúdo dos detalhes mantendo a estrutura base"""
-        # Remove todos os widgets do layout de conteúdo
+        """Limpa completamente o conteúdo dos detalhes"""
         while self.layout_conteudo.count():
             item = self.layout_conteudo.takeAt(0)
             if item.widget():
                 widget = item.widget()
-                if widget != self.label_vazio:  # Não remove o label vazio se existir
+                if widget != self.label_vazio:
                     widget.setParent(None)
                     widget.deleteLater()
-    
-    def mostrar_analise_rodocargas(self, rodocargas_data, valor_nf):
-        """Mostra análise da Rodocargas"""
-        group_rodocargas = QGroupBox("📊 ANÁLISE RODOCARGAS")
-        group_rodocargas.setStyleSheet("QGroupBox { font-weight: bold; color: #e74c3c; }")
-        layout_rodocargas = QFormLayout()
-        layout_rodocargas.setVerticalSpacing(8)
-        layout_rodocargas.setHorizontalSpacing(15)
-        
-        try:
-            conn = self.db.get_connection()
-            cursor = conn.cursor()
-            cursor.execute('''
-                SELECT percentual_base, icms FROM transportadoras 
-                WHERE nome = 'Rodocargas'
-            ''')
-            config = cursor.fetchone()
-            conn.close()
-            
-            if config:
-                percentual_base = config[0] or 14.0
-                icms = config[1] or 7.0
-                
-                valor_base = valor_nf * (percentual_base / 100)
-                valor_icms = valor_base * (icms / 100)
-                valor_calculado = valor_base + valor_icms
-                valor_real = rodocargas_data[1]
-                
-                layout_rodocargas.addRow("Percentual Base:", QLabel(f"{percentual_base}%"))
-                layout_rodocargas.addRow("ICMS:", QLabel(f"{icms}%"))
-                
-                base_formatado = f"R$ {valor_base:,.2f}".replace(',', 'X').replace('.', ',').replace('X', '.')
-                layout_rodocargas.addRow("Valor Base:", QLabel(base_formatado))
-                
-                icms_formatado = f"R$ {valor_icms:,.2f}".replace(',', 'X').replace('.', ',').replace('X', '.')
-                layout_rodocargas.addRow("Valor ICMS:", QLabel(icms_formatado))
-                
-                calculado_formatado = f"R$ {valor_calculado:,.2f}".replace(',', 'X').replace('.', ',').replace('X', '.')
-                layout_rodocargas.addRow("Total Calculado:", QLabel(calculado_formatado))
-                
-                real_formatado = f"R$ {valor_real:,.2f}".replace(',', 'X').replace('.', ',').replace('X', '.')
-                layout_rodocargas.addRow("Valor Real:", QLabel(real_formatado))
-                
-                diferenca = valor_real - valor_calculado
-                diferenca_formatado = f"R$ {diferenca:,.2f}".replace(',', 'X').replace('.', ',').replace('X', '.')
-                label_diferenca = QLabel(diferenca_formatado)
-                if diferenca > 0:
-                    label_diferenca.setStyleSheet("color: #e74c3c; font-weight: bold;")
-                    layout_rodocargas.addRow("🔴 Diferença (Acima):", label_diferenca)
-                else:
-                    label_diferenca.setStyleSheet("color: #27ae60; font-weight: bold;")
-                    layout_rodocargas.addRow("🟢 Diferença (Abaixo):", label_diferenca)
-        
-        except Exception as e:
-            print(f"Erro na análise Rodocargas: {e}")
-        
-        group_rodocargas.setLayout(layout_rodocargas)
-        self.layout_conteudo.addWidget(group_rodocargas)
-    
+
     def editar_cotacao(self):
+        """Abre a janela de edição da cotação"""
         if self.cotacao_selecionada_id:
             dialog = EditarCotacaoDialog(self.db, self.cotacao_selecionada_id, self)
             if dialog.exec_() == QDialog.Accepted:
                 self.carregar_detalhes_cotacao(0, 0)
                 self.carregar_cotacoes()
-    
+
     def imprimir_cotacao(self):
+        """Imprime a cotação selecionada"""
         if not self.cotacao_selecionada_id:
             QMessageBox.warning(self, "Aviso", "Selecione uma cotação para imprimir!")
             return
@@ -897,15 +1181,17 @@ class HistoricoWindow(QWidget):
         
         if dialog.exec_() == QPrintDialog.Accepted:
             QMessageBox.information(self, "Impressão", f"Cotação #{self.cotacao_selecionada_id} enviada para impressão!")
-    
+
     def exportar_pdf(self):
+        """Exporta a cotação para PDF"""
         if not self.cotacao_selecionada_id:
             QMessageBox.warning(self, "Aviso", "Selecione uma cotação para exportar!")
             return
         
         QMessageBox.information(self, "PDF", f"Exportando cotação #{self.cotacao_selecionada_id} para PDF...")
-    
+
     def exportar_excel_cotacao(self):
+        """Exporta a cotação específica para Excel"""
         if not self.cotacao_selecionada_id:
             QMessageBox.warning(self, "Aviso", "Selecione uma cotação para exportar!")
             return
@@ -955,8 +1241,9 @@ class HistoricoWindow(QWidget):
             
         except Exception as e:
             QMessageBox.critical(self, "Erro", f"Erro ao exportar Excel: {e}")
-    
+
     def exportar_excel(self):
+        """Exporta todas as cotações para Excel"""
         try:
             conn = self.db.get_connection()
             
@@ -1010,8 +1297,9 @@ class HistoricoWindow(QWidget):
             
         except Exception as e:
             QMessageBox.critical(self, "Erro", f"Erro ao exportar Excel: {e}")
-    
+
     def excluir_cotacao(self):
+        """Exclui a cotação selecionada"""
         if not self.cotacao_selecionada_id:
             return
         
@@ -1048,7 +1336,7 @@ class HistoricoWindow(QWidget):
                 QMessageBox.critical(self, "Erro", f"Erro de conexão: {e}")
         elif ok:
             QMessageBox.warning(self, "Aviso", "Texto incorreto. A cotação não foi excluída.")
-    
+
     def limpar_detalhes(self):
         """Limpa completamente os detalhes e volta ao estado inicial"""
         self.limpar_conteudo_detalhes()
@@ -1063,14 +1351,15 @@ class HistoricoWindow(QWidget):
         self.titulo_detalhes.setText("👀 SELECIONE UMA COTAÇÃO")
         self.titulo_detalhes.setStyleSheet("""
             color: #7f8c8d; 
-            padding: 15px; 
-            background-color: #f8f9fa; 
-            border-bottom: 2px solid #dee2e6;
-            margin: 0px;
+            padding: 20px; 
+            background: qlineargradient(x1:0, y1:0, x2:1, y2:0, stop:0 #95a5a6, stop:1 #7f8c8d);
+            color: white;
+            border-bottom: 3px solid #6c7a89;
         """)
         self.setup_botoes_acao()
-    
+
     def limpar_filtros(self):
+        """Limpa todos os filtros"""
         self.filtro_data_inicio.setDate(QDate.currentDate().addDays(-30))
         self.filtro_data_fim.setDate(QDate.currentDate())
         self.filtro_fornecedor_input.clear()

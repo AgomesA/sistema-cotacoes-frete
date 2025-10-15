@@ -1,3 +1,4 @@
+# calculadora_window.py - DESIGN PREMIUM
 import sqlite3
 import json
 from PyQt5.QtWidgets import (QWidget, QVBoxLayout, QHBoxLayout, QPushButton, 
@@ -16,21 +17,35 @@ class CalculadoraWindow(QWidget):
         self.setup_ui()
     
     def setup_ui(self):
-        """Configura a interface da calculadora de cubagem"""
+        """Configura a interface da calculadora com design premium"""
         main_layout = QVBoxLayout()
+        main_layout.setContentsMargins(0, 0, 0, 0)
         self.setLayout(main_layout)
         
-        # Título
-        title = QLabel("🧮 CALCULADORA DE CUBAGEM")
-        title.setFont(QFont("Arial", 16, QFont.Bold))
-        title.setAlignment(Qt.AlignCenter)
-        main_layout.addWidget(title)
+        # Aplicar fundo gradiente
+        self.setStyleSheet("background: qlineargradient(x1:0, y1:0, x2:1, y2:1, stop:0 #ecf0f1, stop:1 #bdc3c7);")
+        
+        # Header premium
+        header = QLabel("🧮 CALCULADORA DE CUBAGEM")
+        header.setFont(QFont("Arial", 20, QFont.Bold))
+        header.setStyleSheet("""
+            color: white; 
+            padding: 25px; 
+            background: qlineargradient(x1:0, y1:0, x2:1, y2:0, stop:0 #8e44ad, stop:1 #9b59b6);
+            border-bottom: 3px solid #7d3c98;
+            margin-bottom: 0px;
+        """)
+        header.setAlignment(Qt.AlignCenter)
+        main_layout.addWidget(header)
         
         # Scroll area
         scroll = QScrollArea()
         scroll.setWidgetResizable(True)
+        scroll.setStyleSheet("QScrollArea { border: none; background: transparent; }")
         scroll_content = QWidget()
         scroll_layout = QVBoxLayout()
+        scroll_layout.setSpacing(20)
+        scroll_layout.setContentsMargins(25, 25, 25, 25)
         
         # Seção de configuração
         self.setup_configuracao(scroll_layout)
@@ -52,17 +67,73 @@ class CalculadoraWindow(QWidget):
         self.adicionar_linha()
     
     def setup_configuracao(self, layout):
-        """Configura a seção de unidade de medida"""
+        """Configura a seção de unidade de medida com design premium"""
         group = QGroupBox("⚙️ CONFIGURAÇÃO")
+        group.setStyleSheet("""
+            QGroupBox {
+                font-weight: bold;
+                font-size: 16px;
+                color: #2c3e50;
+                border: 3px solid #3498db;
+                border-radius: 12px;
+                margin-top: 15px;
+                padding-top: 15px;
+                background: white;
+            }
+            QGroupBox::title {
+                subcontrol-origin: margin;
+                left: 15px;
+                padding: 0 15px 0 15px;
+                background: white;
+            }
+        """)
+        
         config_layout = QHBoxLayout()
+        config_layout.setSpacing(20)
         
         # Label
         label = QLabel("UNIDADE DE MEDIDA:")
-        label.setFont(QFont("Arial", 10, QFont.Bold))
+        label.setFont(QFont("Arial", 12, QFont.Bold))
+        label.setStyleSheet("color: #2c3e50;")
         
         # Radio buttons para unidade
-        self.radio_cm = QRadioButton("CENTÍMETROS (cm)")
-        self.radio_metros = QRadioButton("METROS (m)")
+        self.radio_cm = QRadioButton("📏 CENTÍMETROS (cm)")
+        self.radio_cm.setFont(QFont("Arial", 11))
+        self.radio_cm.setStyleSheet("""
+            QRadioButton {
+                color: #2c3e50;
+                padding: 8px;
+                background: #f8f9fa;
+                border-radius: 6px;
+            }
+            QRadioButton::indicator {
+                width: 16px;
+                height: 16px;
+            }
+            QRadioButton::indicator:checked {
+                background-color: #3498db;
+                border: 2px solid #2980b9;
+            }
+        """)
+        
+        self.radio_metros = QRadioButton("📐 METROS (m)")
+        self.radio_metros.setFont(QFont("Arial", 11))
+        self.radio_metros.setStyleSheet("""
+            QRadioButton {
+                color: #2c3e50;
+                padding: 8px;
+                background: #f8f9fa;
+                border-radius: 6px;
+            }
+            QRadioButton::indicator {
+                width: 16px;
+                height: 16px;
+            }
+            QRadioButton::indicator:checked {
+                background-color: #3498db;
+                border: 2px solid #2980b9;
+            }
+        """)
         
         # Grupo para os radios
         self.unidade_group = QButtonGroup()
@@ -85,30 +156,91 @@ class CalculadoraWindow(QWidget):
         layout.addWidget(group)
     
     def setup_tabela(self, layout):
-        """Configura a tabela de itens"""
+        """Configura a tabela de itens com design premium"""
         group = QGroupBox("📦 DIMENSÕES DOS VOLUMES")
-        group_layout = QVBoxLayout()
+        group.setStyleSheet("""
+            QGroupBox {
+                font-weight: bold;
+                font-size: 16px;
+                color: #2c3e50;
+                border: 3px solid #e67e22;
+                border-radius: 12px;
+                margin-top: 15px;
+                padding-top: 15px;
+                background: white;
+            }
+            QGroupBox::title {
+                subcontrol-origin: margin;
+                left: 15px;
+                padding: 0 15px 0 15px;
+                background: white;
+            }
+        """)
         
-        # Cria tabela
+        group_layout = QVBoxLayout()
+        group_layout.setSpacing(15)
+        
+        # Tabela premium
         self.tabela = QTableWidget()
         self.tabela.setColumnCount(6)
         self.tabela.setHorizontalHeaderLabels([
             "Item", "Quantidade", "Largura", "Comprimento", "Altura", "Total (m³)"
         ])
         
+        # Estilo premium da tabela
+        self.tabela.setStyleSheet("""
+            QTableWidget {
+                background: white;
+                border: 2px solid #bdc3c7;
+                border-radius: 8px;
+                gridline-color: #ecf0f1;
+                font-size: 11px;
+            }
+            QHeaderView::section {
+                background-color: #34495e;
+                color: white;
+                padding: 12px;
+                border: none;
+                font-weight: bold;
+            }
+            QTableWidget::item {
+                padding: 10px;
+                border-bottom: 1px solid #ecf0f1;
+            }
+            QTableWidget::item:selected {
+                background-color: #3498db;
+                color: white;
+            }
+        """)
+        
         # Configura larguras das colunas
         header = self.tabela.horizontalHeader()
-        header.setSectionResizeMode(0, QHeaderView.ResizeToContents)  # Item
-        header.setSectionResizeMode(1, QHeaderView.ResizeToContents)  # Quantidade
-        header.setSectionResizeMode(2, QHeaderView.ResizeToContents)  # Largura
-        header.setSectionResizeMode(3, QHeaderView.ResizeToContents)  # Comprimento
-        header.setSectionResizeMode(4, QHeaderView.ResizeToContents)  # Altura
-        header.setSectionResizeMode(5, QHeaderView.ResizeToContents)  # Total
+        header.setSectionResizeMode(0, QHeaderView.ResizeToContents)
+        header.setSectionResizeMode(1, QHeaderView.ResizeToContents)
+        header.setSectionResizeMode(2, QHeaderView.ResizeToContents)
+        header.setSectionResizeMode(3, QHeaderView.ResizeToContents)
+        header.setSectionResizeMode(4, QHeaderView.ResizeToContents)
+        header.setSectionResizeMode(5, QHeaderView.ResizeToContents)
         
         group_layout.addWidget(self.tabela)
         
         # Botão para adicionar linha
         btn_adicionar = QPushButton("➕ ADICIONAR LINHA")
+        btn_adicionar.setFixedHeight(45)
+        btn_adicionar.setStyleSheet("""
+            QPushButton {
+                background: qlineargradient(x1:0, y1:0, x2:1, y2:0, stop:0 #27ae60, stop:1 #2ecc71);
+                color: white;
+                border: none;
+                border-radius: 8px;
+                font-weight: bold;
+                font-size: 14px;
+            }
+            QPushButton:hover {
+                background: qlineargradient(x1:0, y1:0, x2:1, y2:0, stop:0 #2ecc71, stop:1 #27ae60);
+                border: 2px solid rgba(255,255,255,0.3);
+            }
+        """)
         btn_adicionar.clicked.connect(self.adicionar_linha)
         group_layout.addWidget(btn_adicionar)
         
@@ -116,18 +248,45 @@ class CalculadoraWindow(QWidget):
         layout.addWidget(group)
     
     def setup_resultados(self, layout):
-        """Configura a seção de resultados"""
+        """Configura a seção de resultados com design premium"""
         group = QGroupBox("📊 RESULTADO")
+        group.setStyleSheet("""
+            QGroupBox {
+                font-weight: bold;
+                font-size: 16px;
+                color: #2c3e50;
+                border: 3px solid #2ecc71;
+                border-radius: 12px;
+                margin-top: 15px;
+                padding-top: 15px;
+                background: white;
+            }
+            QGroupBox::title {
+                subcontrol-origin: margin;
+                left: 15px;
+                padding: 0 15px 0 15px;
+                background: white;
+            }
+        """)
+        
         result_layout = QVBoxLayout()
         
         # Total da cubagem
         result_item_layout = QHBoxLayout()
         label_total = QLabel("CUBAGEM TOTAL:")
-        label_total.setFont(QFont("Arial", 12, QFont.Bold))
+        label_total.setFont(QFont("Arial", 14, QFont.Bold))
+        label_total.setStyleSheet("color: #2c3e50;")
         
         self.label_total_valor = QLabel("0,000 m³")
-        self.label_total_valor.setFont(QFont("Arial", 14, QFont.Bold))
-        self.label_total_valor.setStyleSheet("color: #27ae60;")
+        self.label_total_valor.setFont(QFont("Arial", 18, QFont.Bold))
+        self.label_total_valor.setStyleSheet("""
+            color: #27ae60; 
+            background: #d5f4e6; 
+            padding: 15px; 
+            border: 2px solid #2ecc71;
+            border-radius: 8px;
+        """)
+        self.label_total_valor.setAlignment(Qt.AlignCenter)
         
         result_item_layout.addWidget(label_total)
         result_item_layout.addWidget(self.label_total_valor)
@@ -138,23 +297,65 @@ class CalculadoraWindow(QWidget):
         layout.addWidget(group)
     
     def setup_botoes(self, layout):
-        """Configura os botões de ação"""
+        """Configura os botões de ação com design premium"""
         btn_layout = QHBoxLayout()
+        btn_layout.setSpacing(15)
         
         # Botão Calcular
         btn_calcular = QPushButton("🧮 CALCULAR")
-        btn_calcular.setFixedHeight(40)
+        btn_calcular.setFixedHeight(50)
+        btn_calcular.setStyleSheet("""
+            QPushButton {
+                background: qlineargradient(x1:0, y1:0, x2:1, y2:0, stop:0 #3498db, stop:1 #2980b9);
+                color: white;
+                border: none;
+                border-radius: 8px;
+                font-weight: bold;
+                font-size: 14px;
+            }
+            QPushButton:hover {
+                background: qlineargradient(x1:0, y1:0, x2:1, y2:0, stop:0 #2980b9, stop:1 #3498db);
+                border: 2px solid rgba(255,255,255,0.3);
+            }
+        """)
         btn_calcular.clicked.connect(self.calcular_tudo)
         
         # Botão Limpar
         btn_limpar = QPushButton("🔄 LIMPAR TUDO")
-        btn_limpar.setFixedHeight(40)
+        btn_limpar.setFixedHeight(50)
+        btn_limpar.setStyleSheet("""
+            QPushButton {
+                background: qlineargradient(x1:0, y1:0, x2:1, y2:0, stop:0 #e67e22, stop:1 #d35400);
+                color: white;
+                border: none;
+                border-radius: 8px;
+                font-weight: bold;
+                font-size: 14px;
+            }
+            QPushButton:hover {
+                background: qlineargradient(x1:0, y1:0, x2:1, y2:0, stop:0 #d35400, stop:1 #e67e22);
+                border: 2px solid rgba(255,255,255,0.3);
+            }
+        """)
         btn_limpar.clicked.connect(self.limpar_tudo)
         
         # Botão Salvar
         btn_salvar = QPushButton("💾 SALVAR CÁLCULO")
-        btn_salvar.setFixedHeight(40)
-        btn_salvar.setStyleSheet("background-color: #3498db; color: white; font-weight: bold;")
+        btn_salvar.setFixedHeight(50)
+        btn_salvar.setStyleSheet("""
+            QPushButton {
+                background: qlineargradient(x1:0, y1:0, x2:1, y2:0, stop:0 #27ae60, stop:1 #2ecc71);
+                color: white;
+                border: none;
+                border-radius: 8px;
+                font-weight: bold;
+                font-size: 14px;
+            }
+            QPushButton:hover {
+                background: qlineargradient(x1:0, y1:0, x2:1, y2:0, stop:0 #2ecc71, stop:1 #27ae60);
+                border: 2px solid rgba(255,255,255,0.3);
+            }
+        """)
         btn_salvar.clicked.connect(self.salvar_calculo)
         
         btn_layout.addWidget(btn_calcular)
@@ -162,7 +363,8 @@ class CalculadoraWindow(QWidget):
         btn_layout.addWidget(btn_salvar)
         
         layout.addLayout(btn_layout)
-    
+
+    # MÉTODOS DE FUNCIONALIDADE
     def adicionar_linha(self):
         """Adiciona uma nova linha na tabela"""
         row = self.tabela.rowCount()
@@ -171,36 +373,82 @@ class CalculadoraWindow(QWidget):
         # Coluna 0: Número do item
         item_num = QTableWidgetItem(str(row + 1))
         item_num.setFlags(item_num.flags() & ~Qt.ItemIsEditable)
+        item_num.setBackground(Qt.lightGray)
         self.tabela.setItem(row, 0, item_num)
         
         # Coluna 1: Quantidade
         quantidade_input = QLineEdit()
         quantidade_input.setPlaceholderText("1")
         quantidade_input.setText("1")
+        quantidade_input.setStyleSheet("""
+            QLineEdit {
+                padding: 8px;
+                border: 1px solid #bdc3c7;
+                border-radius: 4px;
+                font-size: 11px;
+            }
+            QLineEdit:focus {
+                border-color: #3498db;
+            }
+        """)
         quantidade_input.textChanged.connect(self.recalcular_linha)
         self.tabela.setCellWidget(row, 1, quantidade_input)
         
         # Coluna 2: Largura
         largura_input = QLineEdit()
         largura_input.setPlaceholderText("0")
+        largura_input.setStyleSheet("""
+            QLineEdit {
+                padding: 8px;
+                border: 1px solid #bdc3c7;
+                border-radius: 4px;
+                font-size: 11px;
+            }
+            QLineEdit:focus {
+                border-color: #3498db;
+            }
+        """)
         largura_input.textChanged.connect(self.recalcular_linha)
         self.tabela.setCellWidget(row, 2, largura_input)
         
         # Coluna 3: Comprimento
         comprimento_input = QLineEdit()
         comprimento_input.setPlaceholderText("0")
+        comprimento_input.setStyleSheet("""
+            QLineEdit {
+                padding: 8px;
+                border: 1px solid #bdc3c7;
+                border-radius: 4px;
+                font-size: 11px;
+            }
+            QLineEdit:focus {
+                border-color: #3498db;
+            }
+        """)
         comprimento_input.textChanged.connect(self.recalcular_linha)
         self.tabela.setCellWidget(row, 3, comprimento_input)
         
         # Coluna 4: Altura
         altura_input = QLineEdit()
         altura_input.setPlaceholderText("0")
+        altura_input.setStyleSheet("""
+            QLineEdit {
+                padding: 8px;
+                border: 1px solid #bdc3c7;
+                border-radius: 4px;
+                font-size: 11px;
+            }
+            QLineEdit:focus {
+                border-color: #3498db;
+            }
+        """)
         altura_input.textChanged.connect(self.recalcular_linha)
         self.tabela.setCellWidget(row, 4, altura_input)
         
         # Coluna 5: Total (readonly)
         total_item = QTableWidgetItem("0,000 m³")
         total_item.setFlags(total_item.flags() & ~Qt.ItemIsEditable)
+        total_item.setBackground(Qt.lightGray)
         self.tabela.setItem(row, 5, total_item)
     
     def parse_number(self, text):
@@ -216,7 +464,6 @@ class CalculadoraWindow(QWidget):
     
     def recalcular_linha(self):
         """Recalcula uma linha específica quando os valores mudam"""
-        # Encontra qual linha foi alterada
         for row in range(self.tabela.rowCount()):
             quantidade_input = self.tabela.cellWidget(row, 1)
             largura_input = self.tabela.cellWidget(row, 2)
